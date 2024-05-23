@@ -7,10 +7,13 @@ import Content.RTContainers.RTPanel;
 import Content.RTContainers.RTTabRegisterer;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainMenu extends RTPanel implements RTTab {
+    public static final int PLAY_BUTTON = 0;
+    public static final int INFO_BUTTON = 1;
+    public static final int QUIT_BUTTON = 2;
+
     private final Settings settings;
     private final RTFrame mainFrame;
 

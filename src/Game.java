@@ -2,6 +2,7 @@ import Content.LevelSelection;
 import Content.MainMenu;
 import Content.RTContainers.RTFrame;
 import Content.RTContainers.RTPanel;
+import Content.RTContainers.RTTabRegisterer;
 import Content.Settings;
 
 import javax.swing.*;
@@ -47,7 +48,7 @@ public class Game implements ActionListener {
 
         // Program //
         frame.setVisible(true);
-        settings.log("Loaded in " + settings.getTimeElapsedSec() + " seconds.");
+        settings.log("Loaded " + RTTabRegisterer.getNumOfRegisteredTabs() + " tabs in " + settings.getTimeElapsedSec() + " seconds. ");
     }
 
     public static void main(String[] args) {
@@ -62,11 +63,11 @@ public class Game implements ActionListener {
         }
 
         // Main menu buttons
-        if (e.getSource().equals(mainMenu.getButtons()[0])) { // Play button
+        if (e.getSource().equals(mainMenu.getButtons()[MainMenu.PLAY_BUTTON])) { // Play button
             levelSelection.openTab();
-        } else if (e.getSource().equals(mainMenu.getButtons()[1])) { // Info button
-            frame.closeFrame();
-        } else if (e.getSource().equals(mainMenu.getButtons()[2])) { // Quit button
+        } else if (e.getSource().equals(mainMenu.getButtons()[MainMenu.INFO_BUTTON])) { // Info button
+            settings.error("The info button has no function yet.");
+        } else if (e.getSource().equals(mainMenu.getButtons()[MainMenu.QUIT_BUTTON])) { // Quit button
             frame.closeFrame();
         }
 

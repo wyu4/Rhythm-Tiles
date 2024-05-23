@@ -1,5 +1,7 @@
 package Content;
 
+import Content.RTContainers.RTPanel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +9,9 @@ import static Content.StringColors.*;
 
 public class Settings {
 
-    private final long STARTTIME;
+    private final long startTime;
+    private final List<String> logs, errors;
     private int fps;
-    private final List<String> LOGS, ERRORS;
 
     /**
      * Create a new Settings object
@@ -23,11 +25,11 @@ public class Settings {
      * @param fps The desired FPS
      */
     public Settings(int fps) {
-        STARTTIME = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         this.fps = fps; // Setting the FPS
 
-        LOGS = new ArrayList<String>();
-        ERRORS = new ArrayList<String>();
+        logs = new ArrayList<String>();
+        errors = new ArrayList<String>();
     }
 
     /**
@@ -39,10 +41,10 @@ public class Settings {
     }
 
     /**
-     * Calculate the delta based on FPS
+     * Calculate the delta in milliseconds based on FPS
      * @return int (1000 / FPS)
      */
-    public double calculateDelta() {
+    public double calculateDesiredDelta() {
         return (1000.0 / fps);
     }
 
@@ -59,7 +61,7 @@ public class Settings {
      * @return The time elapsed in milliseconds
      */
     public long getTimeElapsedMillis() {
-        return System.currentTimeMillis() - STARTTIME;
+        return System.currentTimeMillis() - startTime;
     }
 
     /**
@@ -76,7 +78,7 @@ public class Settings {
      */
     public void log(String message) {
         System.out.println(toColorPattern(FontColors.GREEN) + "(Settings): " + message + toColorPattern(FontColors.WHITE));
-        LOGS.add(message);
+        logs.add(message);
     }
 
     /**
@@ -85,7 +87,7 @@ public class Settings {
      */
     public void error(String message) {
         System.out.println(toColorPattern(FontColors.RED) + "(Settings): " + message + toColorPattern(FontColors.WHITE));
-        ERRORS.add(message);
+        errors.add(message);
     }
 
     /**
@@ -93,8 +95,8 @@ public class Settings {
      * @return Array containing all logs printed via log()
      */
     public String[] getLogs() {
-        String[] array = new String[LOGS.size()];
-        LOGS.toArray(array);
+        String[] array = new String[logs.size()];
+        logs.toArray(array);
         return array;
     }
 
@@ -103,8 +105,8 @@ public class Settings {
      * @return Array containing all errors printed via error()
      */
     public String[] getErrors() {
-        String[] array = new String[ERRORS.size()];
-        ERRORS.toArray(array);
+        String[] array = new String[errors.size()];
+        errors.toArray(array);
         return array;
     }
 

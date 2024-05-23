@@ -1,19 +1,16 @@
 package Content;
 
-import Content.RTContainers.Layers.InvisibleLayer;
-import Content.RTContainers.Layers.MainBackgroundLayer;
+import Content.RTContainers.Interfaces.RTTab;
 import Content.RTContainers.RTButton;
 import Content.RTContainers.RTFrame;
 import Content.RTContainers.RTPanel;
+import Content.RTContainers.RTTabRegisterer;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainMenu extends RTPanel implements ActionListener {
-    private static final int BG_OPACITY = 100; // For testing purposes, value between 0-255 allows panel visibility
-
+public class MainMenu extends RTPanel implements RTTab {
     private final Settings settings;
     private final RTFrame mainFrame;
 
@@ -21,7 +18,7 @@ public class MainMenu extends RTPanel implements ActionListener {
     private final RTButton playButton, infoButton, quitButton;
     private boolean userQuitted;
 
-    public MainMenu(Settings settings, RTFrame mainFrame) {
+    public MainMenu(Settings settings, RTFrame mainFrame, ActionListener actionListener) {
         // Instance variables //
         this.settings = settings;
         this.mainFrame = mainFrame;
@@ -42,31 +39,34 @@ public class MainMenu extends RTPanel implements ActionListener {
         setName("MainMenu-ContentPanel");
         setBounds(0, 0, mainFrame.getWidth(), mainFrame.getHeight());
         setLayout(new BorderLayout());
-        setBackground(new Color(0, 0, 0, BG_OPACITY));
+        setBackground(new Color(0, 0, 0, 0));
 
         // Bottom Panel
         bottomPanel.setPreferredSize(new Dimension(getWidth(), getHeight()/10));
-        bottomPanel.setBackground(new Color(0, 255, 0, BG_OPACITY));
+        bottomPanel.setBackground(new Color(40, 40, 51));
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         // Center Panel
         centerPanel.setPreferredSize(new Dimension((getWidth()/3)*2, getHeight()));
-        centerPanel.setBackground(new Color(255, 0, 0, BG_OPACITY));
+        centerPanel.setBackground(new Color(0, 0, 0));
         centerPanel.setLayout(null);
 
         // Right Panel
         rightPanel.setPreferredSize(new Dimension(getWidth()/3, getHeight()));
-        rightPanel.setBackground(new Color(0, 0, 255, BG_OPACITY));
+        rightPanel.setBackground(new Color(0, 0, 0));
         rightPanel.setLayout(new GridLayout(3, 1));
 
         // Play Button
-        playButton.addActionListener(this);
+        playButton.addActionListener(actionListener);
+        playButton.setBackground(new Color(30, 47, 64));
 
         // Info Button
-        infoButton.addActionListener(this);
+        infoButton.addActionListener(actionListener);
+        infoButton.setBackground(new Color(49, 67, 85));
 
         // Quit Button
-        quitButton.addActionListener(this);
+        quitButton.addActionListener(actionListener);
+        quitButton.setBackground(new Color(30, 47, 64));
 
         // Adding components //
         // Content Panel
@@ -79,18 +79,36 @@ public class MainMenu extends RTPanel implements ActionListener {
         rightPanel.add(infoButton);
         rightPanel.add(quitButton);
 
+        // Register the tab
+        RTTabRegisterer.registerRTTab(this);
+        setVisible(false);
+
         repaint();
     }
 
+    public RTButton[] getButtons() {
+        return new RTButton[] {playButton, infoButton, quitButton};
+    }
+
+    public void quit() {
+        userQuitted = true;
+        settings.log("User is quitting...");
+        mainFrame.closeFrame();
+    }
+
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (isVisible() && !userQuitted) { // Only perform actions if the main menu is visible
+    public void openTab() {
+        RTTabRegisterer.closeAllTabs();
+        setVisible(true);
+    }
 
-            if (e.getSource().equals(quitButton)) { // User pressed the quit button
-                userQuitted = true;
-                mainFrame.closeFrame();
-            }
+    @Override
+    public void closeTab() {
+        setVisible(false);
+    }
 
-        }
+    @Override
+    public boolean isOpen() {
+        return isVisible();
     }
 }

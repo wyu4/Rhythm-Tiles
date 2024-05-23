@@ -1,6 +1,6 @@
-import Content.RTContainers.Layers.MainBackgroundLayer;
-import Content.RTContainers.Layers.Templates.AlphaGradientLayer;
+
 import Content.RTContainers.RTFrame;
+import Content.RTContainers.RTImageIcon;
 import Content.RTContainers.RTPanel;
 import Content.Settings;
 
@@ -11,8 +11,10 @@ import java.awt.event.*;
 public class GameTest implements KeyListener, ActionListener {
     private Settings settings;
     private RTFrame mainFrame;
-    private RTPanel contentPanel, backgroundPanel1, backgroundPanel2;
+    private RTPanel contentPanel;
     private Timer clock;
+
+    private Long lastFrame, actualDelta;
 
     // The game test constructor (I want everything to run in a non-static method)
     public GameTest() {
@@ -20,55 +22,25 @@ public class GameTest implements KeyListener, ActionListener {
 
         mainFrame = new RTFrame();
         contentPanel = new RTPanel();
-        backgroundPanel1 = new RTPanel();
-        backgroundPanel2 = new RTPanel();
 
         mainFrame.setBounds(100, 100, 500, 500);
-        mainFrame.setBackground(new Color(0, 0, 0, 100));
+        mainFrame.setBackground(new Color(0, 0, 0, 0));
         mainFrame.setLayout(null);
         mainFrame.addKeyListener(this);
 
-        contentPanel.setLayout(new GridLayout(2, 3));
+        contentPanel.setLayout(new GridLayout(1, 1));
         contentPanel.setBackground(new Color(0, 0, 0, 0));
-        contentPanel.setBounds(0, 0, 500, 500);
 
-        backgroundPanel1.setLayout(new BorderLayout());
-        backgroundPanel1.setBackground(new Color(0, 0, 0, 0));
-        backgroundPanel1.setBounds(0, 0, 500, 500);
+        mainFrame.setContentPane(contentPanel);
 
-        backgroundPanel2.setLayout(null);
-        backgroundPanel2.setBackground(new Color(0, 0, 0, 100));
-        backgroundPanel2.setBounds(0, 0, 500, 500);
+        RTImageIcon testImage = new RTImageIcon("src/Content/Resources/TestImage.png", 0.5f);
+        JLabel testLabel = new JLabel(testImage);
+        testLabel.setBackground(new Color(0, 0, 0, 0));
 
-        AlphaGradientLayer mainBgLayer = new AlphaGradientLayer();
-        mainBgLayer.setAlpha(0.75f);
-        mainBgLayer.setGradientColor1(new Color(0, 196, 255));
-        mainBgLayer.setGradientColor2(new Color(0, 255, 0));
-
-        JLayer<JComponent> bgLayer = new JLayer<>(backgroundPanel2, mainBgLayer);
-
-        mainFrame.getContentPane().add(backgroundPanel1);
-        backgroundPanel1.add(contentPanel);
-        backgroundPanel1.add(bgLayer, BorderLayout.CENTER);
-
-        RTPanel testPanel1 = new RTPanel();
-        RTPanel testPanel2 = new RTPanel();
-        RTPanel testPanel3 = new RTPanel();
-
-        testPanel1.setPreferredSize(new Dimension(500, 100));
-        testPanel1.setBackground(new Color(255, 0 ,0));
-        testPanel2.setPreferredSize(new Dimension(100, 500));
-        testPanel2.setBackground(new Color(0, 255, 0));
-        testPanel3.setPreferredSize(new Dimension(100, 500));
-        testPanel3.setBackground(new Color(0, 0, 255));
-
-        contentPanel.add(testPanel1); contentPanel.add(new RTPanel()); contentPanel.add(testPanel3);
-        contentPanel.add(new RTPanel()); contentPanel.add(testPanel2); contentPanel.add(new RTPanel());
-        // contentPanel.add(bgLayer);
-
+        contentPanel.add(testLabel);
         mainFrame.setVisible(true);
 
-        clock = new Timer((int) settings.calculateDelta(), this);
+        clock = new Timer((int) settings.calculateDesiredDelta(), this);
 
         settings.log("Loaded test in " + settings.getTimeElapsedSec() + " seconds.");
 
@@ -108,9 +80,22 @@ public class GameTest implements KeyListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        long currentTime = settings.getTimeElapsedMillis();
+
         if (e.getSource().equals(clock)) {
-//            mainFrame.setLocation(mainFrame.getLocation().x + 1, 0);
-            // mainFrame.repaint();
+            if (lastFrame == null) {
+                lastFrame = currentTime;
+                return;
+            }
+
+            if (mainFrame.getWidth() > 2000) {
+                mainFrame.setSize(500, 500);
+            } else {
+                mainFrame.setSize(mainFrame.getWidth() + 10, mainFrame.getHeight());
+            }
+
+            actualDelta = (currentTime - lastFrame);
+            lastFrame = currentTime;
         }
     }
 }

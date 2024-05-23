@@ -2,6 +2,7 @@ package Content.RTContainers;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class RTButton extends JButton {
     public RTButton() {
@@ -13,10 +14,11 @@ public class RTButton extends JButton {
     }
 
     public RTButton(String name, String text) {
-        setName(name);
-        setText(text);
-        setFocusable(false);
-        setBackground(new Color(30, 47, 64));
-        setForeground(new Color(255, 255, 255));
+        setName(name); // Set name
+        setText(text); // Set text
+        setFocusable(false); // Remove focus
+        setLayout(null);
+        setBackground(new Color(30, 47, 64)); // Set background
+        setForeground(new Color(255, 255, 255)); // Set font color
     }
 }

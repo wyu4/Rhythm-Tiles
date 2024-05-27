@@ -16,4 +16,9 @@ public interface RTTab {
      * @return {@code true} if the tab is open, {@code false} if the tab is closed.
      */
     boolean isOpen();
+
+    /**
+     * Refreshes the tab component properties.
+     */
+    void refreshTab();
 }

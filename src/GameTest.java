@@ -1,68 +1,43 @@
-
+import Content.GameManager;
 import Content.RTContainers.RTFrame;
-import Content.RTContainers.RTImageIcon;
 import Content.RTContainers.RTPanel;
-import Content.Settings;
+import Content.RTContainers.RTScrollPane;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class GameTest implements KeyListener, ActionListener {
-    private Settings settings;
-    private RTFrame mainFrame;
-    private RTPanel contentPanel;
-    private Timer clock;
+public class GameTest extends RTFrame implements KeyListener {
+    private final JScrollPane scrollPane;
+    private final JTextArea view;
 
-    private Long lastFrame, actualDelta;
-
-    // The game test constructor (I want everything to run in a non-static method)
     public GameTest() {
-        settings = new Settings(60);
+        setSize(500, 1000);
+        setLayout(new BorderLayout());
+        setUndecorated(false);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setBackground(Color.BLACK);
+        addKeyListener(this);
 
-        mainFrame = new RTFrame();
-        contentPanel = new RTPanel();
+        view = new JTextArea("View");
+        view.setFont(new Font("Arial", Font.PLAIN, 25));
+        view.setBackground(Color.WHITE);
+        view.setBounds(0, 0, 500, 200);
 
-        mainFrame.setBounds(100, 100, 500, 500);
-        mainFrame.setBackground(new Color(0, 0, 0, 0));
-        mainFrame.setLayout(null);
-        mainFrame.addKeyListener(this);
+        scrollPane = new JScrollPane(view);
+        scrollPane.setWheelScrollingEnabled(true);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        contentPanel.setLayout(new GridLayout(1, 1));
-        contentPanel.setBackground(new Color(0, 0, 0, 0));
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-        mainFrame.setContentPane(contentPanel);
-
-        RTImageIcon testImage = new RTImageIcon("src/Content/Resources/TestImage.png", 0.5f);
-        JLabel testLabel = new JLabel(testImage);
-        testLabel.setBackground(new Color(0, 0, 0, 0));
-
-        contentPanel.add(testLabel);
-        mainFrame.setVisible(true);
-
-        clock = new Timer((int) settings.calculateDesiredDelta(), this);
-
-        settings.log("Loaded test in " + settings.getTimeElapsedSec() + " seconds.");
-
-        // Program
-        clock.start();
-        mainFrame.revalidate();
-        mainFrame.repaint();
+        setVisible(true);
     }
 
-    // Main method (calls constructor)
     public static void main(String[] args) {
-        System.out.println("Launching game tester class...");
+        System.out.println("Starting tester...");
         new GameTest();
-    }
-
-    // Delay block, pauses the thread for a certain amount of milliseconds
-    public void delay(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            settings.error("Error running the delay block: " + e.getCause());
-        }
     }
 
     @Override
@@ -71,31 +46,10 @@ public class GameTest implements KeyListener, ActionListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
+            closeFrame();
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {}
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        long currentTime = settings.getTimeElapsedMillis();
-
-        if (e.getSource().equals(clock)) {
-            if (lastFrame == null) {
-                lastFrame = currentTime;
-                return;
-            }
-
-            if (mainFrame.getWidth() > 2000) {
-                mainFrame.setSize(500, 500);
-            } else {
-                mainFrame.setSize(mainFrame.getWidth() + 10, mainFrame.getHeight());
-            }
-
-            actualDelta = (currentTime - lastFrame);
-            lastFrame = currentTime;
-        }
-    }
 }

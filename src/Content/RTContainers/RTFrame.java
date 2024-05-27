@@ -12,7 +12,6 @@ public class RTFrame extends JFrame implements PropertyChangeListener {
      */
     public RTFrame() {
         RTPanel contentPanel = new RTPanel();
-        contentPanel.setOpaque(false);
 
         setUndecorated(true); // Remove decoration
         setFocusable(true); // Make frame focusable
@@ -63,13 +62,6 @@ public class RTFrame extends JFrame implements PropertyChangeListener {
      */
     public void closeFrame() {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); // Triggers the default closing event
-    }
-
-    @Override
-    public String toString() {
-        return "TFrame{" +
-                "JFrame{" + super.toString() + "}" +
-                "}";
     }
 
     // Interface methods

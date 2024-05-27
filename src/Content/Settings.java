@@ -1,7 +1,10 @@
 package Content;
 
+import Content.RTContainers.RTFrame;
 import Content.RTContainers.RTPanel;
+import Content.RTContainers.RTTabManager;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,8 @@ public class Settings {
     private final long startTime;
     private final List<String> logs, errors;
     private int fps;
+    private Dimension screenSize;
+    private RTFrame window;
 
     /**
      * Create a new Settings object
@@ -30,6 +35,7 @@ public class Settings {
 
         logs = new ArrayList<String>();
         errors = new ArrayList<String>();
+        screenSize = new Dimension();
     }
 
     /**
@@ -46,6 +52,36 @@ public class Settings {
      */
     public double calculateDesiredDelta() {
         return (1000.0 / fps);
+    }
+
+    public Dimension getScreenSize() {
+        return screenSize;
+    }
+
+    public int getScreenWidth() {
+        return (int) screenSize.getWidth();
+    }
+
+    public int getScreenHeight() {
+        return (int) screenSize.getHeight();
+    }
+
+    public void setScreenSize(int width, int height) {
+        setScreenSize(new Dimension(width, height));
+    }
+
+    public void setScreenSize(Dimension screenSize) {
+        this.screenSize = screenSize;
+        RTTabManager.refreshAllOpenTabs();
+        window.setSize(screenSize);
+    }
+
+    public void setWindow(RTFrame window) {
+        this.window = window;
+    }
+
+    public RTFrame getWindow() {
+        return window;
     }
 
     /**

@@ -5,7 +5,7 @@ import Content.RTContainers.Interfaces.RTTab;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RTTabRegisterer {
+public abstract class RTTabManager {
     private static final List<RTTab> registeredTabs = new ArrayList<RTTab>(); // List of registered registeredTabs
 
     /**
@@ -44,5 +44,13 @@ public abstract class RTTabRegisterer {
      */
     public static int getNumOfRegisteredTabs() {
         return registeredTabs.size();
+    }
+
+    public static void refreshAllOpenTabs() {
+        for (RTTab t : registeredTabs) { // Iterate through registeredTabs list
+            if (t.isOpen()) { // Check if the tab is open
+                t.refreshTab(); // Refresh the tab
+            }
+        }
     }
 }

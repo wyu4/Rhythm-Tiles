@@ -1,7 +1,4 @@
-import Content.GameManager;
 import Content.RTContainers.RTFrame;
-import Content.RTContainers.RTPanel;
-import Content.RTContainers.RTScrollPane;
 
 import javax.swing.*;
 import java.awt.*;

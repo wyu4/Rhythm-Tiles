@@ -92,6 +92,7 @@ public class MainMenu extends RTPanel implements RTTab {
         bottomPanel.setPreferredSize(new Dimension(getWidth(), getHeight()/10));
         bottomPanel.setBackground(new Color(40, 40, 51));
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.setAlpha(0.75f);
 
         // Center Panel
         centerPanel.setPreferredSize(new Dimension((getWidth()/3)*2, getHeight()));

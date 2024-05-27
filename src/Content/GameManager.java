@@ -25,10 +25,8 @@ public class GameManager extends RTFrame implements ActionListener {
         // Settings
         settings.setScreenSize(1280, 720);
 
-
         clock = new Timer((int) settings.calculateDesiredDelta(), this);
         contentPane = new RTPanel();
-        System.out.println(contentPane);
 
         mainMenu = new MainMenu(settings, this);
         levelSelection = new LevelSelection(settings, this);
@@ -37,8 +35,8 @@ public class GameManager extends RTFrame implements ActionListener {
         // Main frame
         setName("WindowFrame");
         setContentPane(contentPane);
-        setBackground(new Color(0, 0, 0));
-        setLocation(100, 100);
+        setBackground(new Color(0, 0, 0, 0));
+        setLocation(100, 50);
 
         // Content pane
         contentPane.setName("WindowContentPane");
@@ -48,6 +46,7 @@ public class GameManager extends RTFrame implements ActionListener {
 
         // Adding components
         contentPane.add(mainMenu);
+        contentPane.add(levelSelection);
 
         // Program //
         setVisible(true);
@@ -74,14 +73,22 @@ public class GameManager extends RTFrame implements ActionListener {
         }
 
         // Main menu buttons
-        if (e.getSource().equals(mainMenu.getButtons()[MainMenu.PLAY_BUTTON])) { // Play button
-            levelSelection.openTab();
-        } else if (e.getSource().equals(mainMenu.getButtons()[MainMenu.INFO_BUTTON])) { // Info button
-            settings.error("The info button has no function yet.");
-        } else if (e.getSource().equals(mainMenu.getButtons()[MainMenu.QUIT_BUTTON])) { // Quit button
-            settings.log("User is quitting via Main Menu... (session lasted " + settings.getTimeElapsedSec() + " seconds)");
-            closeFrame();
+        if (mainMenu.isOpen()) {
+            if (e.getSource().equals(mainMenu.getButtons()[MainMenu.PLAY_BUTTON])) { // Play button
+                levelSelection.openTab();
+            } else if (e.getSource().equals(mainMenu.getButtons()[MainMenu.INFO_BUTTON])) { // Info button
+                settings.error("The info button has no function yet.");
+            } else if (e.getSource().equals(mainMenu.getButtons()[MainMenu.QUIT_BUTTON])) { // Quit button
+                settings.log("User is quitting via Main Menu... (session lasted " + settings.getTimeElapsedSec() + " seconds)");
+                closeFrame();
+            }
         }
 
+        // Level selection buttons
+        else if (levelSelection.isOpen()) {
+            if (e.getSource().equals(levelSelection.getBackButton())) {
+                mainMenu.openTab();
+            }
+        }
     }
 }

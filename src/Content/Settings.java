@@ -54,34 +54,42 @@ public class Settings {
         return (1000.0 / fps);
     }
 
+    /**
+     * Get the current set screen size
+     * @return {@code Dimension} The screen size
+     */
     public Dimension getScreenSize() {
         return screenSize;
     }
 
-    public int getScreenWidth() {
-        return (int) screenSize.getWidth();
-    }
-
-    public int getScreenHeight() {
-        return (int) screenSize.getHeight();
-    }
-
+    /**
+     * Set the new screen size
+     * @param width The width of the new screen size
+     * @param height The height of the new screen size
+     */
     public void setScreenSize(int width, int height) {
         setScreenSize(new Dimension(width, height));
     }
 
+    /**
+     * Set the new screen size
+     * @param screenSize {@code Dimension} The new screen size
+     */
     public void setScreenSize(Dimension screenSize) {
         this.screenSize = screenSize;
         RTTabManager.refreshAllOpenTabs();
-        window.setSize(screenSize);
+
+        if (window != null) { // Check if the variable window isn't null
+            window.setSize(screenSize);
+        }
     }
 
+    /**
+     * Set the main window of the game. The window is used in methods such as setScreenSize();
+     * @param window {@code RTFrame} Main window
+     */
     public void setWindow(RTFrame window) {
         this.window = window;
-    }
-
-    public RTFrame getWindow() {
-        return window;
     }
 
     /**
@@ -149,7 +157,8 @@ public class Settings {
     @Override
     public String toString() {
         return "Settings{" +
-                "fps:" + fps +
+                "fps:" + fps + "," +
+                "screensize{w:" + screenSize.getWidth() + ",h:" + getScreenSize().getHeight() +
                 "}";
     }
 }

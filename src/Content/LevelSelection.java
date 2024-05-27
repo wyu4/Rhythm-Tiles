@@ -1,10 +1,7 @@
 package Content;
 
+import Content.RTContainers.*;
 import Content.RTContainers.Interfaces.RTTab;
-import Content.RTContainers.RTButton;
-import Content.RTContainers.RTFrame;
-import Content.RTContainers.RTPanel;
-import Content.RTContainers.RTTabManager;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -15,7 +12,10 @@ public class LevelSelection extends RTPanel implements RTTab {
 
     private final GridLayout mainLayout;
     private final BorderLayout leftLayout;
-    private final RTPanel leftPanel, rightPanel;
+    private final GridBagLayout rightLayout;
+    private final GridBagConstraints rightContraints;
+
+    private final RTPanel leftPanel, rightPanel, leftTopPanel;
     private final RTButton backButton;
 
     public LevelSelection(Settings settings, ActionListener actionListener) {
@@ -26,8 +26,11 @@ public class LevelSelection extends RTPanel implements RTTab {
         // New objects //
         mainLayout = new GridLayout(1, 2);
         leftLayout = new BorderLayout();
+        rightLayout = new GridBagLayout();
+        rightContraints = new GridBagConstraints();
 
         leftPanel = new RTPanel(getClass().getName()+"-LeftPanel");
+        leftTopPanel = new RTPanel(getClass().getName()+"-LeftTopPanel", 0);
         rightPanel = new RTPanel(getClass().getName()+"-RightPanel");
         backButton = new RTButton(getClass().getName()+"-Back");
 
@@ -35,6 +38,20 @@ public class LevelSelection extends RTPanel implements RTTab {
         refreshTab();
 
         RTTabManager.registerRTTab(this);
+
+        // Adding components
+        leftTopPanel.add(backButton);
+        leftPanel.add(leftTopPanel, BorderLayout.NORTH);
+
+        add(leftPanel);
+        add(rightPanel);
+
+        repaint();
+        revalidate();
+    }
+
+    public RTButton getBackButton() {
+        return backButton;
     }
 
     @Override
@@ -68,8 +85,25 @@ public class LevelSelection extends RTPanel implements RTTab {
         leftPanel.setBackground(new Color(0, 0, 0));
         leftPanel.setLayout(leftLayout);
 
+        // Left Top Panel
+        leftTopPanel.setLayout(null);
+        leftTopPanel.setPreferredSize(new Dimension(0, (int) settings.getScreenSize().getHeight()/15));
+
+        // Right Panel
+        rightPanel.setBackground(new Color(20, 0, 37));
+        rightPanel.setLayout(rightLayout);
 
         // Back Button
+        RTImageIcon backIcon = new RTImageIcon(Resources.Images.BACK);
+
         backButton.addActionListener(actionListener);
+        backButton.setSize((int) leftTopPanel.getPreferredSize().getHeight(), (int) leftTopPanel.getPreferredSize().getHeight());
+        backButton.setBackground(new Color(0, 0, 0, 0));
+        backButton.setBorder(null);
+        backButton.setContentAreaFilled(false);
+
+        backIcon.resizeIcon(backButton.getSize());
+
+        backButton.setIcon(backIcon);
     }
 }

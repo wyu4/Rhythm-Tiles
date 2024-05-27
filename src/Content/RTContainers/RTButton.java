@@ -7,23 +7,44 @@ import java.io.File;
 public class RTButton extends JButton {
     private float alpha;
 
+    /**
+     * Create a new RTButton object.
+     */
     public RTButton() {
         this("RTButton");
     }
 
+    /**
+     * Create a new RTButton object.
+     * @param name The name of the RTButton (JButton)
+     */
     public RTButton(String name) {
         this(name, "");
     }
 
+    /**
+     * Create a new RTButton object.
+     * @param name The name of the RTButton (JButton)
+     * @param text The text displayed on the button
+     */
     public RTButton(String name, String text) {
+        this(name, text, 1);
+    }
+
+    /**
+     * Create a new RTButton object.
+     * @param name The name of the RTButton (JButton)
+     * @param text The text displayed on the button
+     * @param alpha The alpha keying
+     */
+    public RTButton(String name, String text, float alpha) {
         setName(name); // Set name
         setText(text); // Set text
         setFocusable(false); // Remove focus
         setLayout(null);
         setBackground(new Color(30, 47, 64)); // Set background
         setForeground(new Color(255, 255, 255)); // Set font color
-
-        alpha = 1;
+        setAlpha(alpha);
     }
 
     /**

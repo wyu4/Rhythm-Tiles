@@ -18,12 +18,21 @@ public class RTPanel extends JPanel {
      * @param name The name of the RTPanel (JPanel)
      */
     public RTPanel(String name) {
+        this(name, 1);
+    }
+
+    /**
+     * Create a new Rhythm-Tiles panel object (is-a JPanel)
+     * @param name The name of the RTPanel (JPanel)
+     * @param alpha The alpha keying of the panel
+     */
+    public RTPanel(String name, float alpha) {
         setBackground(new Color(0, 0, 0)); // Set the background color to black
         setBorder(null); // Delete borders
         setLayout(null); // Remove layout manager
         setFocusable(false); // Remove focusable
         setName(name); // Set name to the corresponding parameter
-        alpha = 1;
+        setAlpha(alpha);
     }
 
     /**

@@ -14,19 +14,19 @@ public class RTImageIcon extends ImageIcon {
 
     /**
      * Create a new RTImageIcon.
-     * @param url The path of the image file.
+     * @param path The path of the image file.
      */
-    public RTImageIcon(String url) {
-        this(url, 1f); // Chain constructor
+    public RTImageIcon(String path) {
+        this(path, 1f); // Chain constructor
     }
 
     /**
      * Create a new RTImageIcon.
-     * @param url The path of the image file.
+     * @param path The path of the image file.
      * @param alpha The opacity of the final render.
      */
-    public RTImageIcon(String url, float alpha) {
-        super(url); // Call the super constructor (no use of re-coding the entire ImageIcon)
+    public RTImageIcon(String path, float alpha) {
+        super(path); // Call the super constructor (no use of re-coding the entire ImageIcon)
         this.alpha = alpha; // Set alpha to the corresponding parameter
     }
 
@@ -38,6 +38,14 @@ public class RTImageIcon extends ImageIcon {
     public void resizeIcon(int width, int height) {
         Image resized = getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH); // Create a new resized image
         setImage(resized); // Set the image to the new resized image
+    }
+
+    /**
+     * Resize the visible bounds of the image.
+     * @param size The size of the visible image
+     */
+    public void resizeIcon(Dimension size) {
+        resizeIcon(size.width, size.height); // Chaining method
     }
 
     /**

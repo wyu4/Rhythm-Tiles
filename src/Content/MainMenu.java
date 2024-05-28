@@ -1,9 +1,9 @@
 package Content;
 
-import Content.RTContainers.Interfaces.RTTab;
-import Content.RTContainers.RTButton;
-import Content.RTContainers.RTPanel;
-import Content.RTContainers.RTTabManager;
+import Content.RTComponents.Interfaces.RTTab;
+import Content.RTComponents.RTButton;
+import Content.RTComponents.RTPanel;
+import Content.RTComponents.RTTabManager;
 
 import java.awt.*;
 import java.awt.event.ActionListener;

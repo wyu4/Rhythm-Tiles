@@ -1,8 +1,8 @@
 package Content;
 
-import Content.RTContainers.RTFrame;
-import Content.RTContainers.RTPanel;
-import Content.RTContainers.RTTabManager;
+import Content.RTComponents.RTFrame;
+import Content.RTComponents.RTPanel;
+import Content.RTComponents.RTTabManager;
 
 import javax.swing.*;
 import java.awt.*;

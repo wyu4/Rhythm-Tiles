@@ -1,7 +1,7 @@
 package Content;
 
-import Content.RTContainers.*;
-import Content.RTContainers.Interfaces.RTTab;
+import Content.RTComponents.*;
+import Content.RTComponents.Interfaces.RTTab;
 
 import java.awt.*;
 import java.awt.event.ActionListener;

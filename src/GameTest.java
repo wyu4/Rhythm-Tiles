@@ -1,4 +1,4 @@
-import Content.RTContainers.RTFrame;
+import Content.RTComponents.RTFrame;
 
 import javax.swing.*;
 import java.awt.*;

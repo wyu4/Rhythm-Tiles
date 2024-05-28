@@ -12,11 +12,12 @@ public class LevelSelection extends RTPanel implements RTTab {
 
     private final GridLayout mainLayout;
     private final BorderLayout leftLayout;
-    private final GridBagLayout rightLayout;
-    private final GridBagConstraints rightContraints;
+    private final GridBagLayout rightLayout, leftCenterLayout;
+    private final GridBagConstraints rightContraints, leftCenterConstraints;
 
-    private final RTPanel leftPanel, rightPanel, leftTopPanel;
+    private final RTPanel leftPanel, rightPanel, leftTopPanel, leftCenterPanel;
     private final RTButton backButton;
+    private final MapPlayer previewPlayer;
 
     public LevelSelection(Settings settings, ActionListener actionListener) {
         // Instance variables //
@@ -25,14 +26,18 @@ public class LevelSelection extends RTPanel implements RTTab {
 
         // New objects //
         mainLayout = new GridLayout(1, 2);
+        leftCenterLayout = new GridBagLayout();
         leftLayout = new BorderLayout();
         rightLayout = new GridBagLayout();
         rightContraints = new GridBagConstraints();
+        leftCenterConstraints = new GridBagConstraints();
 
         leftPanel = new RTPanel(getClass().getName()+"-LeftPanel");
         leftTopPanel = new RTPanel(getClass().getName()+"-LeftTopPanel", 0);
+        leftCenterPanel = new RTPanel(getClass().getName()+"-LeftCenterPanel");
         rightPanel = new RTPanel(getClass().getName()+"-RightPanel");
         backButton = new RTButton(getClass().getName()+"-Back");
+        previewPlayer = new MapPlayer(settings, true);
 
         // Set properties
         refreshTab();
@@ -41,7 +46,11 @@ public class LevelSelection extends RTPanel implements RTTab {
 
         // Adding components
         leftTopPanel.add(backButton);
+
+        leftCenterPanel.add(previewPlayer, leftCenterConstraints);
+
         leftPanel.add(leftTopPanel, BorderLayout.NORTH);
+        leftPanel.add(leftCenterPanel, BorderLayout.CENTER);
 
         add(leftPanel);
         add(rightPanel);
@@ -58,6 +67,7 @@ public class LevelSelection extends RTPanel implements RTTab {
     public void openTab() {
         RTTabManager.closeAllTabs();
         setVisible(true);
+        previewPlayer.init();
     }
 
     @Override
@@ -89,6 +99,18 @@ public class LevelSelection extends RTPanel implements RTTab {
         leftTopPanel.setLayout(null);
         leftTopPanel.setPreferredSize(new Dimension(0, (int) settings.getScreenSize().getHeight()/15));
 
+        // Left Center Panel
+        leftCenterPanel.setLayout(leftCenterLayout);
+        leftCenterPanel.setAlpha(0.1f);
+        leftCenterPanel.setBackground(new Color(55, 81, 70));
+
+        leftCenterConstraints.fill = GridBagConstraints.VERTICAL;
+        leftCenterConstraints.weightx = 0.5;
+        leftCenterConstraints.gridwidth = 1;
+        leftCenterConstraints.gridheight = 1;
+        leftCenterConstraints.gridx = 0;
+        leftCenterConstraints.gridy = 0;
+
         // Right Panel
         rightPanel.setBackground(new Color(20, 0, 37));
         rightPanel.setLayout(rightLayout);
@@ -103,6 +125,9 @@ public class LevelSelection extends RTPanel implements RTTab {
         backButton.setContentAreaFilled(false);
 
         backIcon.resizeIcon(backButton.getSize());
+
+        // Preview player
+        previewPlayer.init();
 
         backButton.setIcon(backIcon);
     }

@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="gson-2.10.1" level="project" />
+    <orderEntry type="library" exported="" name="javafx-swt" level="project" />
   </component>
 </module>

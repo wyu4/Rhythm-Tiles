@@ -64,6 +64,12 @@ public class RTFrame extends JFrame implements PropertyChangeListener {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); // Triggers the default closing event
     }
 
+    @Override
+    public void setBackground(Color bgColor) {
+        super.setBackground(bgColor);
+        getContentPane().setBackground(bgColor);
+    }
+
     // Interface methods
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

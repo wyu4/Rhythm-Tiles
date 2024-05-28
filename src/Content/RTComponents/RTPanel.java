@@ -80,6 +80,7 @@ public class RTPanel extends JPanel {
      * @param alpha The new alpha
      */
     public void setAlpha(float alpha) {
+        setOpaque(alpha>0);
         this.alpha = alpha;
         repaint();
     }

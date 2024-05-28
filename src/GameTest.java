@@ -1,4 +1,9 @@
+import Content.MapPlayer;
+import Content.RTComponents.RTAudio;
 import Content.RTComponents.RTFrame;
+import Content.RTComponents.RTPanel;
+import Content.Settings;
+import javafx.embed.swing.JFXPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,30 +11,32 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class GameTest extends RTFrame implements KeyListener {
-    private final JScrollPane scrollPane;
-    private final JTextArea view;
-
     public GameTest() {
-        setSize(500, 1000);
-        setLayout(new BorderLayout());
-        setUndecorated(false);
+        new JFXPanel(); // Work around "Toolkit not initialized" error
+
+        Settings settings = new Settings(60);
+        settings.setWindow(this);
+        settings.setScreenSize(1280, 720);
+
+        setLayout(new GridLayout(1, 3));
+        setLocation(100, 50);
+        setUndecorated(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBackground(Color.BLACK);
+        setBackground(new Color(0, 0, 0, 0));
         addKeyListener(this);
 
-        view = new JTextArea("View");
-        view.setFont(new Font("Arial", Font.PLAIN, 25));
-        view.setBackground(Color.WHITE);
-        view.setBounds(0, 0, 500, 200);
+        MapPlayer player = new MapPlayer(settings);
 
-        scrollPane = new JScrollPane(view);
-        scrollPane.setWheelScrollingEnabled(true);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-        getContentPane().add(scrollPane, BorderLayout.CENTER);
+        add(new RTPanel("Empty", 0));
+        add(player);
+        add(new RTPanel("Empty", 0));
 
         setVisible(true);
+
+        player.init();
+
+        repaint();
+        revalidate();
     }
 
     public static void main(String[] args) {

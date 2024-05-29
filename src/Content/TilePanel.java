@@ -85,27 +85,27 @@ public class TilePanel extends RTPanel {
         tile.setBounds(spawnpoint.getBounds());
         tiles.add(tile);
         inreachTiles.add(tile);
-        add(tile);
+        contentPanel.add(tile);
     }
 
     public void update(double deltaRate, RankCalculator calculator) {
         for (Tile tile : tiles) {
-            tile.setLocation(0.0, tile.getAccurateY() + calculateTileIncrement(deltaRate));
-            tile.setSize(goal.getSize());
+            if (tiles.contains(tile)) { // Check if the tile hasn't been removed since
+                if (inreachTiles.contains(tile) && tile.isOutOfReach()) {
+                    inreachTiles.remove(tile);
+                    calculator.addPoints(Tile.Rank.MISS);
 
-            if (inreachTiles.contains(tile) && tile.isOutOfReach()) {
-                System.out.println("Out of reach brah");
-                inreachTiles.remove(tile);
-                calculator.addPoints(Tile.Rank.MISS);
+                } else if (tile.getAccurateY() > contentPanel.getAccurateHeight()) {
+                    tiles.remove(tile);
+                    contentPanel.remove(tile);
+                    break;
 
-            } else if (tiles.contains(tile) && (tile.getAccurateY() > contentPanel.getAccurateHeight())) {
-                System.out.println("Deleting...");
-                tiles.remove(tile);
-                contentPanel.remove(tile);
-                remove(tile);
+                } else if (contentPanel.hasComponent(tile)) {
+                    tile.setLocation(0.0, tile.getAccurateY() + calculateTileIncrement(deltaRate));
+                    tile.setSize(contentPanel.getWidth(), goal.getHeight());
+                }
             }
         }
-        contentPanel.repaint();
     }
 
     public double calculateTileIncrement(double deltaRate) {
@@ -118,10 +118,18 @@ public class TilePanel extends RTPanel {
 
     public void handleInput(RankCalculator calculator) {
         for (Tile tile : inreachTiles) {
-            inreachTiles.remove(tile);
-            tiles.remove(tile);
-            remove(tile);
+            Tile.Rank rank = tile.calculateRank();
+            calculator.addPoints(tile.calculateRank());
 
+            if (rank != Tile.Rank.MISS) {
+                if (inreachTiles.contains(tile)) {
+                    inreachTiles.remove(tile);
+                    tiles.remove(tile);
+
+                    contentPanel.remove(tile);
+                    break;
+                }
+            }
         }
     }
 }

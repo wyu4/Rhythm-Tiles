@@ -217,6 +217,15 @@ public class RTPanel extends JPanel {
         repaint();
     }
 
+    public boolean hasComponent(Component c) {
+        for (Component addedComp : getComponents()) {
+            if (addedComp.equals(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void setOpaque(boolean isOpaque) {
         if (isOpaque) {

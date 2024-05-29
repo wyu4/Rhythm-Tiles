@@ -11,10 +11,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class GameTest extends RTFrame implements KeyListener {
+    private final MapPlayer player;
+
     public GameTest() {
         new JFXPanel(); // Work around "Toolkit not initialized" error
 
-        Settings settings = new Settings(60);
+        Settings settings = new Settings(120);
         settings.setWindow(this);
         settings.setScreenSize(1280, 720);
 
@@ -25,7 +27,7 @@ public class GameTest extends RTFrame implements KeyListener {
         setBackground(new Color(0, 0, 0, 0));
         addKeyListener(this);
 
-        MapPlayer player = new MapPlayer(settings);
+        player = new MapPlayer(settings);
 
         add(new RTPanel("Empty", 0));
         add(player);
@@ -51,6 +53,8 @@ public class GameTest extends RTFrame implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             closeFrame();
+        } else {
+            player.handleKeyEvent(e);
         }
     }
 

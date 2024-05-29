@@ -98,6 +98,12 @@ public class Settings {
         this.window = window;
     }
 
+    public void repaintWindow() {
+        if (window != null) {
+            window.repaint();
+        }
+    }
+
     /**
      * Set the FPS
      * @param fps The desired FPS

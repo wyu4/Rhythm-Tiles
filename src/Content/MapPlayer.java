@@ -20,7 +20,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
     private final boolean botAssist;
     private final double timeToGoal;
     private final RankCalculator rankCalculator;
-    private final Timer timer;
+    private final Timer timer, testTimer;
     private RTAudio audio;
 
     private Long lastFrameTime;
@@ -46,6 +46,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
         };
 
         timer = new Timer((int) settings.calculateDesiredDelta(), this);
+        testTimer = new Timer(500, this);
 
         init();
 
@@ -54,6 +55,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
         }
 
         timer.start();
+        testTimer.start();
     }
 
     public void init() {
@@ -112,16 +114,18 @@ public class MapPlayer extends RTPanel implements ActionListener {
             }
             long actualDelta = settings.getTimeElapsedMillis() - lastFrameTime;
             double deltaRate = settings.calculateDesiredDelta() / actualDelta;
-            System.out.println("Desired delta: " + settings.calculateDesiredDelta() + ", Actual delta: " + actualDelta + ", Rate: " + deltaRate);
+//            System.out.println("Desired delta: " + settings.calculateDesiredDelta() + ", Actual delta: " + actualDelta + ", Rate: " + deltaRate);
 
             for (TilePanel tilePanel : tilePanels) {
-                if (((int) settings.getTimeElapsedSec()) % 4 == 0) {
-                    tilePanel.spawnTile();
-                }
                 tilePanel.update(deltaRate, rankCalculator);
             }
 
             lastFrameTime = settings.getTimeElapsedMillis();
+
+            settings.repaintWindow();
+        } else if (e.getSource().equals(testTimer)) {
+            int randomIndex = (int) (Math.random() * 3);
+            tilePanels[randomIndex].spawnTile();
         }
     }
 }

@@ -4,18 +4,19 @@ import Content.RTComponents.RTFrame;
 import Content.RTComponents.RTTabManager;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import static Content.StringColors.*;
 
 public class Settings {
-
     private final long startTime;
     private final List<String> logs, errors;
     private int fps;
     private Dimension screenSize;
     private RTFrame window;
+    private int[] keybinds;
 
     /**
      * Create a new Settings object
@@ -35,6 +36,12 @@ public class Settings {
         logs = new ArrayList<String>();
         errors = new ArrayList<String>();
         screenSize = new Dimension();
+        keybinds = new int[] {
+                KeyEvent.VK_Q,
+                KeyEvent.VK_W,
+                KeyEvent.VK_O,
+                KeyEvent.VK_P
+        };
     }
 
     /**
@@ -151,6 +158,15 @@ public class Settings {
         String[] array = new String[errors.size()];
         errors.toArray(array);
         return array;
+    }
+
+    /**
+     * Get the key bound to a specific column
+     * @param i Column number (0-3)
+     * @return The key event bound to the column number
+     */
+    public int getKeybind(int i) {
+        return keybinds[Math.min(i, keybinds.length-1)];
     }
 
     @Override

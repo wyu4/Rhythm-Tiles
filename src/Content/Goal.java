@@ -1,16 +1,15 @@
-package Content.RTComponents;
+package Content;
 
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.effect.Glow;
+import Content.RTComponents.RTPanel;
 
 import java.awt.Color;
 
-public class RTGoal extends RTPanel {
-    public RTGoal() {
+public class Goal extends RTPanel {
+    public Goal() {
         this("RTGoal");
     }
 
-    public RTGoal(String name) {
+    public Goal(String name) {
         super(name);
         init();
     }

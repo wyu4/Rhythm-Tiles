@@ -37,6 +37,7 @@ public class GameManager extends RTFrame implements ActionListener {
         setContentPane(contentPane);
         setBackground(new Color(0, 0, 0, 0));
         setLocation(100, 50);
+        setResizable(false);
 
         // Content pane
         contentPane.setName("WindowContentPane");

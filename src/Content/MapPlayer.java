@@ -1,25 +1,29 @@
 package Content;
 
 import Content.RTComponents.RTAudio;
-import Content.RTComponents.RTGoal;
 import Content.RTComponents.RTPanel;
-import Content.RTComponents.RTTile;
 
+import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapPlayer extends RTPanel {
+public class MapPlayer extends RTPanel implements ActionListener {
     private final Settings settings;
 
     private final GridLayout mainLayout;
 
-    private final RTPanel[] contentPanels;
-    private final RTPanel[] tilePanels;
-    private final RTGoal[] goals;
-    private final List<RTTile> tiles;
+    private final TilePanel[] tilePanels;
     private final boolean botAssist;
+    private final double timeToGoal;
+    private final RankCalculator rankCalculator;
+    private final Timer timer;
     private RTAudio audio;
+
+    private Long lastFrameTime;
 
     public MapPlayer(Settings settings) {
         this(settings, false);
@@ -28,40 +32,28 @@ public class MapPlayer extends RTPanel {
     public MapPlayer(Settings settings, boolean botAssist) {
         this.settings = settings;
         this.botAssist = botAssist;
+        timeToGoal = 1;
+
+        rankCalculator = new RankCalculator();
 
         mainLayout = new GridLayout(1, 4);
 
-        contentPanels = new RTPanel[] {
-                new RTPanel(getClass().getName() + "ContentPanel0"),
-                new RTPanel(getClass().getName() + "ContentPanel1"),
-                new RTPanel(getClass().getName() + "ContentPanel2"),
-                new RTPanel(getClass().getName() + "ContentPanel3")
+        tilePanels = new TilePanel[] {
+                new TilePanel(settings, 0, timeToGoal),
+                new TilePanel(settings, 1, timeToGoal),
+                new TilePanel(settings, 2, timeToGoal),
+                new TilePanel(settings, 3, timeToGoal)
         };
-        tilePanels = new RTPanel[] {
-                new RTPanel(getClass().getName() + "TilePanel0"),
-                new RTPanel(getClass().getName() + "TilePanel1"),
-                new RTPanel(getClass().getName() + "TilePanel2"),
-                new RTPanel(getClass().getName() + "TilePanel3")
-        };
-        goals = new RTGoal[] {
-                new RTGoal(getClass().getName() + "Goal0"),
-                new RTGoal(getClass().getName() + "Goal1"),
-                new RTGoal(getClass().getName() + "Goal2"),
-                new RTGoal(getClass().getName() + "Goal3")
-        };
-        tiles = new ArrayList<RTTile>();
+
+        timer = new Timer((int) settings.calculateDesiredDelta(), this);
 
         init();
 
-        for (int i = 0; i < contentPanels.length; i++) {
-            RTPanel contentPanel = contentPanels[i];
-            RTPanel tilePanel = tilePanels[i];
-            RTPanel goal = goals[i];
-
-            tilePanel.add(goal);
-            contentPanel.add(tilePanel);
-            add(contentPanel);
+        for (TilePanel p : tilePanels) {
+            add(p);
         }
+
+        timer.start();
     }
 
     public void init() {
@@ -69,34 +61,19 @@ public class MapPlayer extends RTPanel {
     }
 
     public void init(Dimension size) {
-        setAlpha(0.75f);
+        timer.setDelay((int) settings.calculateDesiredDelta());
+
+        setAlpha(0.6f);
         setVisible(true);
         setBackground(new Color(0, 0, 0));
         setPreferredSize(size);
         setLayout(mainLayout);
 
-        for (int i = 0; i < contentPanels.length; i++) {
-            RTPanel contentPanel = contentPanels[i];
-            RTPanel tilePanel = tilePanels[i];
-            RTGoal goal = goals[i];
-
-            contentPanel.setAlpha(0);
-            contentPanel.setLayout(null);
-
-            if (i % 2 == 0) {
-                tilePanel.setAlpha(0.5f);
-            } else {
-                tilePanel.setAlpha(0);
-            }
-            tilePanel.setLocation(0, 0);
-            tilePanel.setSize(contentPanel.getWidth(), contentPanel.getHeight()*2);
-            tilePanel.setBackground(new Color(32, 32, 35));
-            tilePanel.setLayout(null);
-
-            goal.setSize(tilePanel.getWidth()*2, tilePanel.getWidth());;
-            goal.setLocation(-tilePanel.getWidth()/4,
-                    (int) (tilePanel.getHeight()/2 - (goal.getHeight()*1.5))
-            );
+        for (TilePanel p : tilePanels) {
+            p.init(new Dimension(
+                    getWidth()/mainLayout.getColumns(),
+                    getHeight()/mainLayout.getRows()
+            ));
         }
 
         revalidate();
@@ -113,5 +90,38 @@ public class MapPlayer extends RTPanel {
 
     public RTAudio getAudio() {
         return audio;
+    }
+
+    public void handleKeyEvent(KeyEvent e) {
+        for (int i = 0; i < tilePanels.length; i++) {
+            if (e.getKeyCode() == settings.getKeybind(i)) {
+                tilePanels[i].handleInput(rankCalculator);
+                if (!botAssist) {
+                    rankCalculator.reset();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(timer)) {
+            if (lastFrameTime == null) {
+                lastFrameTime = settings.getTimeElapsedMillis();
+                return;
+            }
+            long actualDelta = settings.getTimeElapsedMillis() - lastFrameTime;
+            double deltaRate = settings.calculateDesiredDelta() / actualDelta;
+            System.out.println("Desired delta: " + settings.calculateDesiredDelta() + ", Actual delta: " + actualDelta + ", Rate: " + deltaRate);
+
+            for (TilePanel tilePanel : tilePanels) {
+                if (((int) settings.getTimeElapsedSec()) % 4 == 0) {
+                    tilePanel.spawnTile();
+                }
+                tilePanel.update(deltaRate, rankCalculator);
+            }
+
+            lastFrameTime = settings.getTimeElapsedMillis();
+        }
     }
 }

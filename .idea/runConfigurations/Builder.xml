@@ -2,7 +2,7 @@
   <configuration default="false" name="Builder" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="MapBuilder" />
     <module name="RhythmTiles" />
-    <option name="VM_PARAMETERS" value="--module-path &quot;$ProjectFileDir$\ExternalLibraries\javafx-sdk-22.0.1\lib&quot; --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web" />
+    <option name="VM_PARAMETERS" value="--module-path &quot;$ProjectFileDir$\ExternalLibraries\JavaFX-22.0.1\lib&quot; --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

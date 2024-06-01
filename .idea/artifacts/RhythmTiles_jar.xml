@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/RhythmTiles_jar</output-path>
     <root id="archive" name="RhythmTiles.jar">
       <element id="module-output" name="RhythmTiles" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/gson-2.10.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/GSON-2.10.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

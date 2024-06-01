@@ -175,6 +175,15 @@ public class Settings {
         return keybinds[Math.min(i, keybinds.length-1)];
     }
 
+    /**
+     * Get the key bound to a specific column
+     * @param i Column number (0-3)
+     * @param keycode the desired key code
+     */
+    public void setKeybind(int i, int keycode) {
+        keybinds[i] = keycode;
+    }
+
     @Override
     public String toString() {
         return "Settings{" +

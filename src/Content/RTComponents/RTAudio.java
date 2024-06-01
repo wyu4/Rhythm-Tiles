@@ -62,6 +62,14 @@ public class RTAudio {
         }
     }
 
+    public void restart() {
+        if (player != null) {
+            player.seek(Duration.ZERO);
+        } else {
+            System.out.println(getClass().getName() + " - Media player is null.");
+        }
+    }
+
     /**
      * Get the length of the audio in milliseconds.
      * @return {@code double} milliseconds

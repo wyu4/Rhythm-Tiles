@@ -46,7 +46,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
         };
 
         timer = new Timer((int) settings.calculateDesiredDelta(), this);
-        testTimer = new Timer(500, this);
+        testTimer = new Timer(250, this);
 
         init();
 
@@ -114,7 +114,6 @@ public class MapPlayer extends RTPanel implements ActionListener {
             }
             long actualDelta = settings.getTimeElapsedMillis() - lastFrameTime;
             double deltaRate = settings.calculateDesiredDelta() / actualDelta;
-//            System.out.println("Desired delta: " + settings.calculateDesiredDelta() + ", Actual delta: " + actualDelta + ", Rate: " + deltaRate);
 
             for (TilePanel tilePanel : tilePanels) {
                 tilePanel.update(deltaRate, rankCalculator);
@@ -124,7 +123,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
 
             settings.repaintWindow();
         } else if (e.getSource().equals(testTimer)) {
-            int randomIndex = (int) (Math.random() * 3);
+            int randomIndex = (int) (Math.random() * 3.99);
             tilePanels[randomIndex].spawnTile();
         }
     }

@@ -19,6 +19,7 @@ public class RTFrame extends JFrame implements PropertyChangeListener {
         setContentPane(contentPanel); // Set the content pane to contentPanel
         setDefaultCloseOperation(EXIT_ON_CLOSE); // Make closing the frame exit the program
         setSize(Toolkit.getDefaultToolkit().getScreenSize()); // Set the frame size the toolkits screen size
+        setAutoRequestFocus(true); // Automatically request focus
 
         requestFocusInWindow(); // Request the frame to be focused.
     }

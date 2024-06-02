@@ -54,6 +54,8 @@ public class RTImageIcon extends ImageIcon {
      * @apiNote The parent component may require a repaint in order for the opacity to update.
      */
     public void setAlpha(float alpha) {
+        alpha = Math.min(1, Math.max(0, alpha)); // Clamping alpha between 0 and 1
+
         this.alpha = alpha;
     }
 

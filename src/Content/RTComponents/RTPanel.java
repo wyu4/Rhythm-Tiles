@@ -211,6 +211,8 @@ public class RTPanel extends JPanel {
      * @param alpha The new alpha
      */
     public void setAlpha(float alpha) {
+        alpha = Math.min(1, Math.max(0, alpha)); // Clamping alpha between 0 and 1
+
         super.setOpaque(alpha>0);
 
         this.alpha = alpha;

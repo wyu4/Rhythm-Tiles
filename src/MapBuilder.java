@@ -1,4 +1,4 @@
-import Content.MapPlayer;
+import Content.Map;
 import Content.RTComponents.*;
 import Content.Resources;
 import Content.Settings;
@@ -13,56 +13,69 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
+    private final String MAPS_DIR = "Resources\\Maps";
+
     private final Settings settings;
     private final RTPanel contentPanel, bottomPanel;
     private final RTImageIcon exitIcon, pauseIcon, playIcon, saveIcon, restartIcon;
-    private final RTButton exitButton, pauseButton, playButton, savebutton, restartButton;
+    private final RTButton exitButton, pauseButton, playButton, saveButton, restartButton;
     private final BorderLayout frameLayout;
     private final GridLayout contentLayout;
     private final GridBagLayout bottomLayout;
+    private final Map map;
 
-    private List<List<Double>> tiles;
-    private String name, description, audioPath;
-    private double spawnToGoal;
+    private List<String> keysPressed;
     private final RTAudio audio;
 
-    private boolean recording;
+    private boolean recording; // Flag holding whether the program is recording inputs.
 
+    /**
+     * Create a new map builder
+     */
     public MapBuilder() {
-        tiles = new ArrayList<>();
-        tiles.add(new ArrayList<>());
-        tiles.add(new ArrayList<>());
-        tiles.add(new ArrayList<>());
-        tiles.add(new ArrayList<>());
+        // Create a new map
+        map = new Map();
 
-        recording = false;
+        // Instantiate a new list
+        keysPressed = new ArrayList<>();
 
+        recording = false; // Set recording state to false
+
+        // Create new image icons (using subclass)
         exitIcon = new RTImageIcon(Resources.Images.EXIT);
         pauseIcon = new RTImageIcon(Resources.Images.PAUSE);
         playIcon = new RTImageIcon(Resources.Images.PLAY);
         saveIcon = new RTImageIcon(Resources.Images.SAVE);
         restartIcon = new RTImageIcon(Resources.Images.RESTART);
 
+        // Instantiate new settings
         settings = new Settings(120);
+
+        // Instantiate new JComponents (using subclasses)
         contentPanel = new RTPanel("ContentPanel");
         bottomPanel = new RTPanel("BottomPanel");
         exitButton = new RTButton("Exit");
         pauseButton = new RTButton("Pause");
         playButton = new RTButton("Play");
-        savebutton = new RTButton("Save");
+        saveButton = new RTButton("Save");
         restartButton = new RTButton("Restart");
 
-        frameLayout = new BorderLayout();
-        contentLayout = new GridLayout(1, 3);
-        bottomLayout = new GridBagLayout();
+        // Instantiate new layout managers
+        frameLayout = new BorderLayout(); // Border layout for the frame
+        contentLayout = new GridLayout(1, 3); // Grid layout for the content panel
+        bottomLayout = new GridBagLayout(); // Grid bag layout for the bottom panel
 
-        refresh();
+        refresh(); // Call the refresh method to apply the component properties
 
-        GridBagConstraints bottomConstraints = new GridBagConstraints();
+        // Instatiate and configuring new constraints
+        GridBagConstraints bottomConstraints = new GridBagConstraints(); // Grid bag constraint for the bottom panel
         bottomConstraints.gridy = 0;
         bottomConstraints.gridx = 0;
         bottomConstraints.insets = new Insets(
@@ -75,8 +88,8 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
         bottomConstraints.gridwidth = 1;
         bottomConstraints.fill = GridBagConstraints.CENTER;
 
-        // Adding components
-
+        // Adding components //
+        // Buttons into bottom panel using grid bag constraints
         bottomPanel.add(exitButton, bottomConstraints);
 
         bottomConstraints.gridx = 1;
@@ -86,36 +99,40 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
         bottomPanel.add(playButton, bottomConstraints);
 
         bottomConstraints.gridx = 3;
-        bottomPanel.add(savebutton, bottomConstraints);
+        bottomPanel.add(saveButton, bottomConstraints);
 
         bottomConstraints.gridx = 4;
         bottomPanel.add(restartButton, bottomConstraints);
 
+        // Action listeners into buttons
         exitButton.addActionListener(this);
         pauseButton.addActionListener(this);
         playButton.addActionListener(this);
-        savebutton.addActionListener(this);
+        saveButton.addActionListener(this);
         restartButton.addActionListener(this);
 
+        // Panels into frame
         add(bottomPanel, BorderLayout.SOUTH);
         add(contentPanel, BorderLayout.CENTER);
+
+        // Key listeners into frame
         addKeyListener(this);
 
+        // Revalidate + repaint to fix any rendering errors
         revalidate();
         repaint();
 
-        // Getting map configs
-        name = getStringInput("Choose a name");
-        description = getStringInput("Write a description");
-        audioPath = getPath("Choose audio");
-        spawnToGoal = getDoubleInput("Input the time (seconds) that each tile takes to travel from the spawn to the goal.");
+        // Getting map properties
+        map.setName(getStringInput("Choose a name"));
+        map.setDescription(getStringInput("Write a description"));
+        map.setAudioPath(getRelativePath("Choose audio"));
+        map.setSpawnToGoal(getDoubleInput("Input the time (seconds) that each tile takes to travel from the spawn to the goal."));
         double rate = getDoubleInput("Input the playback rate (only applied in the editor).");
 
-        audio = new RTAudio(audioPath);
-
-        recording = true;
+        audio = new RTAudio(map.getAudioPath());
         audio.setRate(rate);
-        audio.play();
+
+        restart();
     }
 
     public void refresh() {
@@ -176,13 +193,13 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
                 (int) (settings.getScreenSize().getHeight()*0.2), (int) (settings.getScreenSize().getHeight()*0.2)
         );
 
-        savebutton.setIcon(saveIcon);
-        savebutton.setBackground(new Color(32, 32, 32));
-        savebutton.setBorder(null);
-        savebutton.setSize(
+        saveButton.setIcon(saveIcon);
+        saveButton.setBackground(new Color(32, 32, 32));
+        saveButton.setBorder(null);
+        saveButton.setSize(
                 (int) (settings.getScreenSize().getHeight()*0.2), (int) (settings.getScreenSize().getHeight()*0.2)
         );
-        savebutton.setPreferredSize(savebutton.getSize());
+        saveButton.setPreferredSize(saveButton.getSize());
         saveIcon.resizeIcon(
                 (int) (settings.getScreenSize().getHeight()*0.2), (int) (settings.getScreenSize().getHeight()*0.2)
         );
@@ -199,28 +216,66 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
         );
     }
 
+    /**
+     * Pause the audio and stop recording
+     */
     public void pause() {
         recording = false;
         audio.pause();
     }
 
+    /**
+     * Start the audio and record
+     */
     public void play() {
         recording = true;
         audio.play();
     }
 
+    /**
+     * Re-instantiate the tiles list and restart the audio.
+     */
     public void restart() {
-        audio.pause();
-        tiles = new ArrayList<>();
-        tiles.add(new ArrayList<>());
-        tiles.add(new ArrayList<>());
-        tiles.add(new ArrayList<>());
-        tiles.add(new ArrayList<>());
+        pause();
         audio.restart();
-        audio.play();
+        map.resetTiles();
+        play();
     }
 
+    /**
+     * Export the project properties and tiles to "maps" located inside the Resources directory.
+     */
     public void save() {
+        String jsonData = map.exportJSON();
+
+        File mapsDir = new File(MAPS_DIR);
+        File dataFile = new File(MAPS_DIR + "\\" + map.getName() + ".json");
+
+        if (!mapsDir.exists()) {
+            boolean created = mapsDir.mkdir();
+            if (!created) {
+                sendMessage("Error: could not create Maps directory. Please try again.");
+                return;
+            }
+        }
+        if (!dataFile.exists()) {
+            boolean created = false;
+            try {
+                created = dataFile.createNewFile();
+            } catch (IOException e) {
+                sendMessage("Error: could not create Maps data file. Please try again.");
+                return;
+            }
+        }
+
+        try {
+            FileWriter dataFileWriter = new FileWriter(dataFile, false);
+            dataFileWriter.write(jsonData);
+            dataFileWriter.close();
+        } catch (IOException e) {
+            sendMessage("Error: could not create or use file writer: " + e.getMessage());
+            return;
+        }
 
         sendMessage("Saved.");
     }
@@ -261,8 +316,8 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
         return input;
     }
 
-    public String getPath(String message) {
-        JFileChooser fileChooser = getFileChooser("File Chooser", message);
+    public String getRelativePath(String message) {
+        RTFileChooser fileChooser = new RTFileChooser("File Chooser", message);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(".mp3, .wav (Audio)", "mp3", "wav"));
 
         String filePath = ""; // Variable used to store the file path
@@ -272,26 +327,14 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
             int returnVal = fileChooser.showOpenDialog(contentPanel); // Prompt file chooser
 
             if (returnVal == JFileChooser.APPROVE_OPTION) { // If user clicked on the choose button
-                File file = fileChooser.getSelectedFile(); // Get the selected file
-                filePath = file.getPath(); // Set filePath to the selected path for the loop condition
+                filePath = fileChooser.getSelectedRelativeFile(); // Set filePath to the selected path for the loop condition
+                System.out.println(filePath);
             } else { // User pressed on another button (ex: the close or cancel button)
                 closeFrame();
             }
         }
 
         return filePath;
-    }
-
-    private JFileChooser getFileChooser(String title, String message) {
-        JFileChooser fileChooser = new JFileChooser(); // Create a new File Chooser
-        fileChooser.setName(title);
-        fileChooser.setDialogTitle(message);
-        fileChooser.setCurrentDirectory(new File("Resources")); // Set the current directory to the project directory
-        fileChooser.setToolTipText("Select a file");
-        fileChooser.setApproveButtonText("Choose");
-        fileChooser.setApproveButtonToolTipText(message);
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        return fileChooser;
     }
 
     public static void main(String[] args) {
@@ -313,35 +356,38 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (recording) {
-            if (e.getKeyCode() == settings.getKeybind(0)) {
-                tiles.getFirst().add(audio.getCurrentPosition());
-                System.out.println("Logged 0: " + audio.getCurrentPosition());
+        int key = e.getKeyCode();
+        if (recording && !keysPressed.contains(String.valueOf(key))) {
+            keysPressed.add(String.valueOf(key));
+            double timestamp = audio.getCurrentPosition();
+            if (key == settings.getKeybind(0)) {
+                map.addTileDown(0, timestamp);
+                System.out.println("Logged down 0: " + timestamp);
                 return;
-            } else if (e.getKeyCode() == settings.getKeybind(1)) {
-                tiles.get(1).add(audio.getCurrentPosition());
-                System.out.println("Logged 1: " + audio.getCurrentPosition());
+            } else if (key == settings.getKeybind(1)) {
+                map.addTileDown(1, timestamp);
+                System.out.println("Logged down 1: " + timestamp);
                 return;
-            } else if (e.getKeyCode() == settings.getKeybind(2)) {
-                tiles.get(2).add(audio.getCurrentPosition());
-                System.out.println("Logged 2: " + audio.getCurrentPosition());
+            } else if (key == settings.getKeybind(2)) {
+                map.addTileDown(2, timestamp);
+                System.out.println("Logged down 2: " + timestamp);
                 return;
-            } else if (e.getKeyCode() == settings.getKeybind(3)) {
-                tiles.get(3).add(audio.getCurrentPosition());
-                System.out.println("Logged 3: " + audio.getCurrentPosition());
+            } else if (key == settings.getKeybind(3)) {
+                map.addTileDown(3, timestamp);
+                System.out.println("Logged down 3: " + timestamp);
                 return;
             }
         }
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (key == KeyEvent.VK_ESCAPE) {
             settings.log("User quit.");
             closeFrame();
-        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        } else if (key == KeyEvent.VK_SPACE) {
             if (recording) {
                 pause();
             } else {
                 play();
             }
-        } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+        } else if (key == KeyEvent.VK_ENTER) {
             settings.log("User saved and quit.");
             save();
             closeFrame();
@@ -349,7 +395,30 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        int key = e.getKeyCode();
+        keysPressed.remove(String.valueOf(key));
+        if (recording) {
+            double timestamp = audio.getCurrentPosition();
+            if (key == settings.getKeybind(0)) {
+                map.addTileUp(0, timestamp);
+                System.out.println("Logged up 0: " + timestamp);
+                return;
+            } else if (key == settings.getKeybind(1)) {
+                map.addTileUp(1, timestamp);
+                System.out.println("Logged up 1: " + timestamp);
+                return;
+            } else if (key == settings.getKeybind(2)) {
+                map.addTileUp(2, timestamp);
+                System.out.println("Logged up 2: " + timestamp);
+                return;
+            } else if (key == settings.getKeybind(3)) {
+                map.addTileUp(3, timestamp);
+                System.out.println("Logged up 3: " + timestamp);
+                return;
+            }
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -361,7 +430,7 @@ public class MapBuilder extends RTFrame implements KeyListener, ActionListener {
             pause();
         } else if (source.equals(playButton)) {
             play();
-        } else if (source.equals(savebutton)) {
+        } else if (source.equals(saveButton)) {
             pause();
             save();
         } else if (source.equals(restartButton)) {

@@ -67,7 +67,7 @@ public class LevelSelection extends RTPanel implements RTTab {
     public void openTab() {
         RTTabManager.closeAllTabs();
         setVisible(true);
-        previewPlayer.init();
+        previewPlayer.refresh();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class LevelSelection extends RTPanel implements RTTab {
         backIcon.resizeIcon(backButton.getSize());
 
         // Preview player
-        previewPlayer.init();
+        previewPlayer.refresh();
 
         backButton.setIcon(backIcon);
     }

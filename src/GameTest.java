@@ -1,20 +1,24 @@
 import Content.MapPlayer;
-import Content.RTComponents.RTAudio;
 import Content.RTComponents.RTFrame;
 import Content.RTComponents.RTPanel;
 import Content.Settings;
 import javafx.embed.swing.JFXPanel;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameTest extends RTFrame implements KeyListener {
     private final MapPlayer player;
 
+    private final List<String> keysPressed;
+
     public GameTest() {
         new JFXPanel(); // Work around "Toolkit not initialized" error
+
+        keysPressed = new ArrayList<>();
 
         Settings settings = new Settings(120);
         settings.setWindow(this);
@@ -35,7 +39,7 @@ public class GameTest extends RTFrame implements KeyListener {
 
         setVisible(true);
 
-        player.init();
+        player.refresh();
 
         repaint();
         revalidate();
@@ -51,13 +55,21 @@ public class GameTest extends RTFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            closeFrame();
-        } else {
-            player.handleKeyEvent(e);
+        int keycode = e.getKeyCode();
+        if (!keysPressed.contains(String.valueOf(keycode))) {
+            keysPressed.add(String.valueOf(keycode));
+
+            if (keycode == KeyEvent.VK_ESCAPE) {
+                closeFrame();
+            } else {
+                player.handleKeyEvent(e);
+            }
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        int keycode = e.getKeyCode();
+        keysPressed.remove(String.valueOf(keycode));
+    }
 }

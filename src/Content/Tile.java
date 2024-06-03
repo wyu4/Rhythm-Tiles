@@ -7,6 +7,7 @@ import java.awt.Color;
 public class Tile extends RTPanel {
     private final RTPanel goal;
     private double hitboxMult;
+    private boolean triggered;
 
     public enum Rank {
             PERFECT, GREAT, GOOD, BAD, MISS
@@ -19,6 +20,7 @@ public class Tile extends RTPanel {
     public Tile(RTPanel goal, double hitboxMult) {
         this.goal = goal;
         this.hitboxMult = hitboxMult;
+        triggered = false;
         init();
     }
 
@@ -46,5 +48,13 @@ public class Tile extends RTPanel {
 
     public boolean isOutOfReach() {
         return ((getAccurateY() > goal.getAccurateY()) && (calculateRank() == Rank.MISS));
+    }
+
+    public void setTriggered(boolean flag) {
+        triggered = flag;
+    }
+
+    public boolean getTriggered() {
+        return triggered;
     }
 }

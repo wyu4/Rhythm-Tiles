@@ -11,10 +11,10 @@ public class Goal extends RTPanel {
 
     public Goal(String name) {
         super(name);
-        init();
+        refresh();
     }
 
-    public void init() {
+    public void refresh() {
         setBackground(Color.WHITE);
         setAlpha(0.6f);
 

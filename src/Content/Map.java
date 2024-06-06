@@ -122,7 +122,7 @@ public class Map {
             Gson converter = new Gson();
             try {
                 String data = Files.readString(file.toPath());
-                converter.fromJson(data, Map.class);
+                return converter.fromJson(data, Map.class);
             } catch (IOException e) {
                 System.out.println("Could not open file: " + e);
                 return new Map();
@@ -140,5 +140,20 @@ public class Map {
     @Override
     public String toString() {
         return exportJSON();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Map m) {
+            return (
+                        this.name.equals(m.name) &&
+                        this.description.equals(m.description) &&
+                        this.audioPath.equals(m.audioPath) &&
+                        this.spawnToGoal == m.spawnToGoal &&
+                        this.tilesDown.equals(m.tilesDown) &&
+                        this.tilesUp.equals(m.tilesUp)
+                    );
+        }
+        return false;
     }
 }

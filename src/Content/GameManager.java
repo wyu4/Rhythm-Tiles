@@ -58,7 +58,7 @@ public class GameManager extends RTFrame implements ActionListener {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            settings.error("Error running delay block: " + e.toString());
+            settings.error("Error running delay block: " + e.getMessage());
         }
     }
 

@@ -88,12 +88,25 @@ public class TilePanel extends RTPanel implements ActionListener {
         return index;
     }
 
-    public double timeToGoal() {
+    public double getTimeToGoal() {
         return timeToGoal;
     }
 
     public Goal getGoal() {
         return goal;
+    }
+
+    /**
+     * Check if there are any tiles in bounds.
+     * @return {@code true} if there are none in bounds, {@code false} if not.
+     */
+    public boolean isEmpty() {
+        for (Tile t : tiles) {
+            if (!t.getTriggered()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void close() {

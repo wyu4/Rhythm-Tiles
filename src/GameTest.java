@@ -1,12 +1,13 @@
-import Content.MapPlayer;
+import Content.*;
 import Content.RTComponents.RTFrame;
 import Content.RTComponents.RTPanel;
-import Content.Settings;
 import javafx.embed.swing.JFXPanel;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,12 @@ public class GameTest extends RTFrame implements KeyListener {
         addKeyListener(this);
 
         player = new MapPlayer(settings);
+        try {
+            Map map = Map.openJSON(new File(Resources.Maps.TEST));
+             player.setCurrentMap(map);
+        } catch (IOException e) {
+            settings.error("Could not open file: " + e.getMessage());
+        }
 
         add(new RTPanel("Empty", 0));
         add(player);

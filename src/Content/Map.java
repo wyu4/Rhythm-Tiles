@@ -95,6 +95,9 @@ public class Map {
         tilesUp.get(column).add(timestamp);
     }
 
+    /**
+     * Get a deep copied list of tiles.
+     */
     public List<List<Double>> getTilesDown() {
         List<List<Double>> deepCopy = new ArrayList<>();
 
@@ -106,6 +109,9 @@ public class Map {
         return deepCopy;
     }
 
+    /**
+     * Get a deep copied list of tiles.
+     */
     public List<List<Double>> getTilesUp() {
         List<List<Double>> deepCopy = new ArrayList<>();
 
@@ -117,18 +123,12 @@ public class Map {
         return deepCopy;
     }
 
-    public static Map openJSON(File file) {
+    public static Map openJSON(File file) throws IOException {
         if (file.exists()) {
             Gson converter = new Gson();
-            try {
-                String data = Files.readString(file.toPath());
-                return converter.fromJson(data, Map.class);
-            } catch (IOException e) {
-                System.out.println("Could not open file: " + e);
-                return new Map();
-            }
+            String data = Files.readString(file.toPath());
+            return converter.fromJson(data, Map.class);
         }
-
         return new Map();
     }
 

@@ -1,5 +1,6 @@
 package Content.RTComponents;
 
+import javafx.animation.PauseTransition;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -10,7 +11,8 @@ public class RTAudio {
     private String path;
     private boolean playing;
     private Media sound;
-    private MediaPlayer player;
+    private MediaPlayer player, offsetPlayer;
+    private double offset;
 
     public RTAudio() {
         this("");
@@ -19,18 +21,45 @@ public class RTAudio {
     public RTAudio(String path) {
         setPath(path);
         playing = false;
+        offset = 0.0;
     }
 
     public void setPath(String path) {
         this.path = path;
 
         if (isValidPath(path)) {
-            sound = new Media(new File(path).toURI().toString());
+            String url = new File(path).toURI().toString();
+            sound = new Media(url);
             if (player != null) { // Stop and dispose any previous media player
                 player.stop();
                 player.dispose();
             }
+            if (offsetPlayer != null) {
+                offsetPlayer.stop();
+                offsetPlayer.dispose();
+            }
             player = new MediaPlayer(sound);
+            player.setVolume(0.0);
+            offsetPlayer = new MediaPlayer(sound);
+
+            // Linking the player and the offset player
+            player.setOnPlaying(() -> {
+                double owedOffset = Math.max(0, offset-getCurrentPosition());
+
+                PauseTransition pause = new PauseTransition(Duration.millis(owedOffset));
+                pause.setOnFinished((_) -> {
+                    if (playing) {
+                        offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+                        offsetPlayer.play();
+                    }
+                });
+                pause.play();
+            });
+
+            player.setOnPaused(() -> {
+                offsetPlayer.pause();
+            });
+
         } else {
             System.out.println(getClass().getName() + " - File [" + path + "] does not exist.");
         }
@@ -51,6 +80,10 @@ public class RTAudio {
         }
     }
 
+    public boolean isPlaying() {
+        return playing;
+    }
+
     public void pause() {
         if (player != null) {
             if (playing) {
@@ -68,6 +101,14 @@ public class RTAudio {
         } else {
             System.out.println(getClass().getName() + " - Media player is null.");
         }
+    }
+
+    public void setOffset(double offset) {
+        this.offset = offset;
+    }
+
+    public double getOffset() {
+        return offset;
     }
 
     /**
@@ -108,6 +149,7 @@ public class RTAudio {
      */
     public void setRate(double r) {
         player.setRate(r);
+        offsetPlayer.setRate(r);
     }
 
     /**

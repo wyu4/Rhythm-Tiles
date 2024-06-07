@@ -7,6 +7,8 @@ public class Resources {
      */
     public static final String RESOURCES_DIR = "Resources";
 
+    public static final String MAPS_DIR = RESOURCES_DIR + "\\Maps";
+
     // Static class containing relative locations of all images
     public static class Images {
         public static final String BACK = RESOURCES_DIR + "\\Back.png";
@@ -20,6 +22,6 @@ public class Resources {
 
     // Static class containing relative locations of all maps
     public static class Maps {
-        public static final String TEST = RESOURCES_DIR + "\\Test.json";
+        public static final String TEST = MAPS_DIR + "\\Test.json";
     }
 }

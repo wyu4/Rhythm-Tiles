@@ -3,6 +3,14 @@
     <output-path>$PROJECT_DIR$/out/artifacts/RhythmTiles_jar</output-path>
     <root id="archive" name="RhythmTiles.jar">
       <element id="module-output" name="RhythmTiles" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx-swt.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.web.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.base.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.fxml.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.media.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.swing.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.controls.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/JavaFX-22.0.1/lib/javafx.graphics.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/ExternalLibraries/GSON-2.10.1.jar" path-in-jar="/" />
     </root>
   </artifact>

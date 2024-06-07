@@ -29,6 +29,7 @@ public class RankCalculator {
      * @param rank Rank selection
      */
     public void addRankCount(Tile.Rank rank) {
+        combo++;
         switch (rank) { // Switch through selections
             case BAD:
                 bad++;
@@ -44,6 +45,7 @@ public class RankCalculator {
                 break;
             case MISS:
                 miss++;
+                combo = 0;
                 break;
         }
     }
@@ -83,15 +85,10 @@ public class RankCalculator {
      * @param rank Rank selection
      */
     public void addPoints(Tile.Rank rank) {
+        addRankCount(rank);
+
         int newPoints = calculatePoints(rank); // Calculate points owed
         points += newPoints; // Add points to variable
-
-        // Add combo if not miss (combos can only be added this way)
-        if (rank != Tile.Rank.MISS) {
-            combo++;
-        } else {
-            combo = 0; // Reset combo if miss
-        }
     }
 
     /**

@@ -13,18 +13,20 @@ import java.util.List;
 public class TilePanel extends RTPanel implements ActionListener {
     private final Settings settings;
     private final int index;
-    private final double timeToGoal;
+    private double timeToGoal;
     private final RTPanel contentPanel, highlightPanel;
     private final List<Tile> tiles;
     private final Tile spawnpoint;
     private final Goal goal;
+    private final RankCalculator calculator;
 
     private final Timer animTimer;
 
-    public TilePanel(Settings settings, int index, double timeToGoal) {
+    public TilePanel(Settings settings, int index, RankCalculator calculator) {
         this.settings = settings;
         this.index = index;
-        this.timeToGoal = timeToGoal;
+        this.timeToGoal = 1;
+        this.calculator = calculator;
 
         tiles = new ArrayList<>();
         goal = new Goal();
@@ -92,6 +94,10 @@ public class TilePanel extends RTPanel implements ActionListener {
         return timeToGoal;
     }
 
+    public void setTimeToGoal(double timeToGoal) {
+        this.timeToGoal = timeToGoal;
+    }
+
     public Goal getGoal() {
         return goal;
     }
@@ -120,7 +126,7 @@ public class TilePanel extends RTPanel implements ActionListener {
         contentPanel.add(tile);
     }
 
-    public void update(double deltaRate, RankCalculator calculator) {
+    public void update(double deltaRate) {
         for (Tile tile : tiles) {
             if (tiles.contains(tile)) { // Check if tile still exists inside the list
                 updateTile(tile, deltaRate);
@@ -128,15 +134,22 @@ public class TilePanel extends RTPanel implements ActionListener {
         }
     }
 
+    /**
+     * Update the properties of a tile.
+     * @param tile The tile to update
+     */
     private void updateTile(Tile tile, double deltaRate) {
+        // Quit out of the method if the tile has since been removed from the array list
         if (!tiles.contains(tile)) {
             return;
         }
 
-        if (tile.isOutOfReach()) {
+        // Trigger the tile to be inputted if the tile is out of reach
+        if (tile.isOutOfPotentialReach()) {
             inputTile(tile);
         }
 
+        // Remove the tile if it moves out of the content panel
         if (tile.getAccurateY() > contentPanel.getAccurateHeight()) {
             if (contentPanel.hasComponent(tile)) {
                 contentPanel.remove(tile);
@@ -144,9 +157,11 @@ public class TilePanel extends RTPanel implements ActionListener {
             return;
         }
 
+        // Move the tile
         tile.setLocation(tile.getAccurateX(), tile.getAccurateY() + calculateTileIncrement(deltaRate));
     }
 
+    //
     public double calculateTileIncrement(double deltaRate) {
         double spawnGoalDist = Math.abs(spawnpoint.getAccurateY() - goal.getAccurateY());
         double incrPerMillis = spawnGoalDist/(timeToGoal*1000);
@@ -155,33 +170,30 @@ public class TilePanel extends RTPanel implements ActionListener {
         return desiredIncrPerFrame * deltaRate;
     }
 
-    public void handleInput(RankCalculator calculator) {
+    /**
+     * Handle a user input
+     */
+    public void handleInput() {
         highlightPanel.setAlpha(0.25f);
         for (Tile tile : tiles) {
-            if (tile.calculateRank() == Tile.Rank.MISS) {
-                continue;
-            }
-
-            boolean valid = inputTile(tile);
-            if (valid) {
-                calculator.addPoints(tile.calculateRank());
-                return;
-            }
+            inputTile(tile);
         }
     }
 
-    private boolean inputTile(Tile tile) {
+    private void inputTile(Tile tile) {
         Tile.Rank rank = tile.calculateRank();
         if (!tile.getTriggered()) {
-            tile.setTriggered(true);
-            tile.setAlpha(switch (rank) {
-                case PERFECT, GREAT -> 0f;
-                case GOOD, BAD -> 0.25f;
-                case MISS -> 1f;
-            });
-            return true;
+            if (tile.isInReach()) {
+                tile.setTriggered(true);
+                tile.setAlpha(switch (rank) {
+                    case PERFECT, GREAT -> 0f;
+                    case GOOD, BAD -> 0.25f;
+                    case MISS -> 1f;
+                });
+                calculator.addPoints(rank);
+                System.out.println(rank);
+            }
         }
-        return false;
     }
 
     @Override

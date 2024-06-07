@@ -33,6 +33,7 @@ public class Tile extends RTPanel {
 
     public Rank calculateRank() {
         double dist = Math.abs(goal.getAccurateCenterY() - getAccurateCenterY());
+
         if (dist <= (getAccurateHeight()) * 0.25 * hitboxMult) {
             return Rank.PERFECT;
         } else if (dist <= (getAccurateHeight()) * 0.5 * hitboxMult) {
@@ -46,7 +47,14 @@ public class Tile extends RTPanel {
         }
     }
 
-    public boolean isOutOfReach() {
+    /**
+     * Check if the tile is currently overlapping with the bounds of the goal
+     */
+    public boolean isInReach() {
+        return (getBounds().intersects(goal.getBounds()));
+    }
+
+    public boolean isOutOfPotentialReach() {
         return ((getAccurateY() > goal.getAccurateY()) && (calculateRank() == Rank.MISS));
     }
 

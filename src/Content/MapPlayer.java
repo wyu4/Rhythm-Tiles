@@ -36,7 +36,6 @@ public class MapPlayer extends RTPanel implements ActionListener {
     public MapPlayer(Settings settings, boolean botAssist) {
         this.settings = settings;
         this.botAssist = botAssist;
-        timeToGoal = 1;
         playing = false;
 
         rankCalculator = new RankCalculator();
@@ -44,10 +43,10 @@ public class MapPlayer extends RTPanel implements ActionListener {
         mainLayout = new GridLayout(1, 4);
 
         tilePanels = new TilePanel[] {
-                new TilePanel(settings, 0, timeToGoal),
-                new TilePanel(settings, 1, timeToGoal),
-                new TilePanel(settings, 2, timeToGoal),
-                new TilePanel(settings, 3, timeToGoal)
+                new TilePanel(settings, 0, rankCalculator),
+                new TilePanel(settings, 1, rankCalculator),
+                new TilePanel(settings, 2, rankCalculator),
+                new TilePanel(settings, 3, rankCalculator)
         };
 
         timer = new Timer((int) settings.calculateDesiredDelta(), this);
@@ -81,6 +80,10 @@ public class MapPlayer extends RTPanel implements ActionListener {
             tilesDown = currentMap.getTilesDown();
             audio = new RTAudio(currentMap.getAudioPath());
             audio.setOffset(timeToGoal * 1000);
+
+            for (TilePanel p : tilePanels) {
+                p.setTimeToGoal(timeToGoal);
+            }
 
             playing = true;
             audio.play();
@@ -145,10 +148,11 @@ public class MapPlayer extends RTPanel implements ActionListener {
     public void handleKeyEvent(KeyEvent e) {
         for (int i = 0; i < tilePanels.length; i++) {
             if (e.getKeyCode() == settings.getKeybind(i)) {
-                tilePanels[i].handleInput(rankCalculator);
-                if (!botAssist) {
+                tilePanels[i].handleInput();
+                if (botAssist) {
                     rankCalculator.reset();
                 }
+//                timer.stop();
             }
         }
     }
@@ -181,7 +185,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
             // Update the tiles
             for (int i = 0; i < tilePanels.length; i++) {
                 TilePanel t = tilePanels[i];
-                t.update(deltaRate, rankCalculator);
+                t.update(deltaRate);
                 handleSpawn(i);
             }
 

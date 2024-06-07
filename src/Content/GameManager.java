@@ -62,10 +62,6 @@ public class GameManager extends RTFrame implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
-        new GameManager();
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(clock)) {

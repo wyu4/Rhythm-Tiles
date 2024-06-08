@@ -1,5 +1,8 @@
 package Content.RTComponents.Interfaces;
 
+/**
+ * Interface containing the necessary methods to register a tab in the Rhythm-Tiles game.
+ */
 public interface RTTab {
     /**
      * Open the tab while closing the other tabs.

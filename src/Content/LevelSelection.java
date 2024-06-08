@@ -52,6 +52,8 @@ public class LevelSelection extends RTPanel implements RTTab {
         leftPanel.add(leftTopPanel, BorderLayout.NORTH);
         leftPanel.add(leftCenterPanel, BorderLayout.CENTER);
 
+
+
         add(leftPanel);
         add(rightPanel);
 

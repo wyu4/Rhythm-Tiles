@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Content.StringColors.*;
+import static Content.Utils.*;
 
 public class Settings {
     private final long startTime;
@@ -133,7 +133,7 @@ public class Settings {
      * @param message Message
      */
     public void log(String message) {
-        System.out.println(toColorPattern(FontColors.GREEN) + "(Settings): " + message + toColorPattern(FontColors.WHITE));
+        System.out.println(F_GREEN + "(Settings): " + message + F_WHITE);
         logs.add(message);
     }
 
@@ -142,7 +142,7 @@ public class Settings {
      * @param message Message
      */
     public void error(String message) {
-        System.out.println(toColorPattern(FontColors.RED) + "(Settings): " + message + toColorPattern(FontColors.WHITE));
+        System.out.println(F_RED + "(Settings): " + message + F_WHITE);
         errors.add(message);
     }
 

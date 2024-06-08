@@ -20,9 +20,9 @@ public class GameManager extends RTFrame implements ActionListener {
         System.out.println("Starting game...");
 
         // Creating objects //
+        // Settings
         settings = new Settings(60);
         settings.setWindow(this);
-        // Settings
         settings.setScreenSize(1280, 720);
 
         clock = new Timer((int) settings.calculateDesiredDelta(), this);

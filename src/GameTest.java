@@ -32,7 +32,7 @@ public class GameTest extends RTFrame implements KeyListener {
         setBackground(new Color(0, 0, 0, 0));
         addKeyListener(this);
 
-        player = new MapPlayer(settings);
+        player = new MapPlayer(settings, true);
         try {
             Map map = Map.openJSON(new File(Resources.Maps.TEST));
              player.setCurrentMap(map);

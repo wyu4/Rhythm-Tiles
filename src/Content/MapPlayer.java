@@ -43,10 +43,10 @@ public class MapPlayer extends RTPanel implements ActionListener {
         mainLayout = new GridLayout(1, 4);
 
         tilePanels = new TilePanel[] {
-                new TilePanel(settings, 0, rankCalculator),
-                new TilePanel(settings, 1, rankCalculator),
-                new TilePanel(settings, 2, rankCalculator),
-                new TilePanel(settings, 3, rankCalculator)
+                new TilePanel(settings, 0, rankCalculator, botAssist),
+                new TilePanel(settings, 1, rankCalculator, botAssist),
+                new TilePanel(settings, 2, rankCalculator, botAssist),
+                new TilePanel(settings, 3, rankCalculator, botAssist)
         };
 
         timer = new Timer((int) settings.calculateDesiredDelta(), this);
@@ -86,6 +86,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
             }
 
             playing = true;
+            audio.setRate(1);
             audio.play();
         } else {
             settings.error("Map is null... Cannot load.");
@@ -149,12 +150,10 @@ public class MapPlayer extends RTPanel implements ActionListener {
         for (int i = 0; i < tilePanels.length; i++) {
             if (e.getKeyCode() == settings.getKeybind(i)) {
                 tilePanels[i].handleInput();
-                if (botAssist) {
-                    rankCalculator.reset();
-                }
-//                timer.stop();
+                return;
             }
         }
+        settings.log(rankCalculator.toString());
     }
 
     public void handleSpawn(int index) {
@@ -192,6 +191,9 @@ public class MapPlayer extends RTPanel implements ActionListener {
             lastFrameTime = settings.getTimeElapsedMillis();
 
             settings.repaintWindow();
+            if (audio!=null) {
+                System.out.println(audio.getActualOffset());
+            }
         } else if (e.getSource().equals(testTimer)) { // Testing tile spawns
             int randomIndex = (int) (Math.random() * 4);
             tilePanels[randomIndex].spawnTile();

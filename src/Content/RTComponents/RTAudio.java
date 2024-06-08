@@ -3,13 +3,14 @@ package Content.RTComponents;
 import javafx.animation.PauseTransition;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 
 import java.io.File;
 
 public class RTAudio {
     private String path;
-    private boolean playing;
+    private boolean playing, disposeOnEnd;
     private Media sound;
     private MediaPlayer player, offsetPlayer;
     private double offset;
@@ -22,6 +23,7 @@ public class RTAudio {
         setPath(path);
         playing = false;
         offset = 0.0;
+        disposeOnEnd = false;
     }
 
     public void setPath(String path) {
@@ -44,20 +46,38 @@ public class RTAudio {
 
             // Linking the player and the offset player
             player.setOnPlaying(() -> {
-                double owedOffset = Math.max(0, offset-getCurrentPosition());
+                playing = true;
+                if (offset == 0.0) {
+                    offsetPlayer.play();
+                } else {
+                    double waitTime = Math.max(0, offset-getCurrentPosition());
 
-                PauseTransition pause = new PauseTransition(Duration.millis(owedOffset));
-                pause.setOnFinished((_) -> {
-                    if (playing) {
-                        offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
-                        offsetPlayer.play();
-                    }
-                });
-                pause.play();
+                    PauseTransition pause = new PauseTransition(Duration.millis(waitTime));
+                    pause.setOnFinished((e) -> {
+                        // offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+                        if (playing) {
+                            offsetPlayer.play();
+                        }
+                    });
+                    pause.play();
+                }
             });
+
+            // player.setOnPlaying(() -> {
+            //     playing = true;
+            //     // offsetPlayer.play();
+            // });
 
             player.setOnPaused(() -> {
                 offsetPlayer.pause();
+                playing = false;
+            });
+
+            offsetPlayer.currentTimeProperty().addListener((e) -> {
+                // double error = getActualOffset() - offset; // Positive when late, negative when early
+                // if (Math.abs(error) >= 20) {
+                //     offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+                // }
             });
 
         } else {
@@ -98,17 +118,34 @@ public class RTAudio {
     public void restart() {
         if (player != null) {
             player.seek(Duration.ZERO);
+            player.play();
         } else {
             System.out.println(getClass().getName() + " - Media player is null.");
         }
     }
 
+    /**
+     * Set the offset of the audio.
+     * @param offset Positive milliseconds to play audio later than it's supposed to, negative to play audio earlier than it's supposed to.
+     */
     public void setOffset(double offset) {
         this.offset = offset;
     }
 
     public double getOffset() {
         return offset;
+    }
+
+    public double getActualOffset() {
+        return getCurrentPosition() - offsetPlayer.getCurrentTime().toMillis();
+    }
+
+    public void setDisposeOnEnd(boolean disposeOnEnd) {
+        this.disposeOnEnd = disposeOnEnd;
+    }
+
+    public boolean getDisposeOnEnd() {
+        return disposeOnEnd;
     }
 
     /**

@@ -2,11 +2,16 @@ package Content;
 
 import Content.RTComponents.RTPanel;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,25 +24,31 @@ public class TilePanel extends RTPanel implements ActionListener {
     private final Tile spawnpoint;
     private final Goal goal;
     private final RankCalculator calculator;
+    private final boolean autoAssist;
+    private final File triggerSfxFile;
 
     private final Timer animTimer;
 
-    public TilePanel(Settings settings, int index, RankCalculator calculator) {
+    public TilePanel(Settings settings, int index, RankCalculator calculator, boolean autoAssist) {
         this.settings = settings;
         this.index = index;
         this.timeToGoal = 1;
         this.calculator = calculator;
+        this.autoAssist = autoAssist;
 
         tiles = new ArrayList<>();
         goal = new Goal();
         spawnpoint = new Tile(goal);
         contentPanel = new RTPanel();
-        highlightPanel = new RTPanel();
+        highlightPanel = new RTPanel("", 0);
         animTimer = new Timer((int) settings.calculateDesiredDelta(), this);
 
         contentPanel.add(goal);
         add(contentPanel);
         add(highlightPanel);
+
+        triggerSfxFile = new File("Resources\\Click.wav");
+
 
         repaint();
         revalidate();
@@ -66,7 +77,7 @@ public class TilePanel extends RTPanel implements ActionListener {
         highlightPanel.setName("HighlightPanel");
         highlightPanel.setLocation(0, 0);
         highlightPanel.setBackground(new Color(255, 255, 255));
-        highlightPanel.setAlpha(0);
+        // highlightPanel.setAlpha(0);
         highlightPanel.setLayout(null);
         highlightPanel.setSize(size.width*2, size.height);
         highlightPanel.setCenterLocation(getCenterLocation().x, highlightPanel.getCenterLocation().y);
@@ -132,6 +143,7 @@ public class TilePanel extends RTPanel implements ActionListener {
                 updateTile(tile, deltaRate);
             }
         }
+        refresh(getSize());
     }
 
     /**
@@ -157,6 +169,8 @@ public class TilePanel extends RTPanel implements ActionListener {
             return;
         }
 
+        handleAutoAssist(tile);
+
         // Move the tile
         tile.setLocation(tile.getAccurateX(), tile.getAccurateY() + calculateTileIncrement(deltaRate));
     }
@@ -180,6 +194,18 @@ public class TilePanel extends RTPanel implements ActionListener {
         }
     }
 
+    private void handleAutoAssist(Tile tile) {
+        if (!autoAssist) {
+            return;
+        }
+
+        if (tile.getAccurateY() >= goal.getAccurateY() && !tile.getTriggered()) {
+            inputTile(tile);
+            highlightPanel.setAlpha(0.25f);
+        }
+    }
+
+
     private void inputTile(Tile tile) {
         Tile.Rank rank = tile.calculateRank();
         if (!tile.getTriggered()) {
@@ -190,8 +216,27 @@ public class TilePanel extends RTPanel implements ActionListener {
                     case GOOD, BAD -> 0.25f;
                     case MISS -> 1f;
                 });
-                calculator.addPoints(rank);
-                System.out.println(rank);
+                if (!autoAssist) {
+                    calculator.addPoints(rank);
+                    System.out.println(rank);
+                } else {
+                    System.out.println(rank + " (bot assisted)");
+                }
+
+                if (triggerSfxFile.exists()) {
+                    try {
+                        AudioInputStream stream = AudioSystem.getAudioInputStream(triggerSfxFile.toURI().toURL());
+
+                        Clip triggerSfx = AudioSystem.getClip();
+                        triggerSfx.open(stream);
+                        triggerSfx.start();
+
+                    } catch (Exception e) {
+                        settings.error("An error occured while playing the Trigger SFX file: " + e.getMessage());
+                    }
+                } else {
+                    settings.error("Trigger SFX file is missing.");
+                }
             }
         }
     }

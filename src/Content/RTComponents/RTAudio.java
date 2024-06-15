@@ -50,16 +50,18 @@ public class RTAudio {
                 if (offset == 0.0) {
                     offsetPlayer.play();
                 } else {
-                    double waitTime = Math.max(0, offset-getCurrentPosition());
-
-                    PauseTransition pause = new PauseTransition(Duration.millis(waitTime));
-                    pause.setOnFinished((e) -> {
-                        // offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
-                        if (playing) {
-                            offsetPlayer.play();
-                        }
-                    });
-                    pause.play();
+//                    double waitTime = Math.max(0, offset-getCurrentPosition());
+                    offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+                    offsetPlayer.setVolume(0);
+                    offsetPlayer.play();
+//                    PauseTransition pause = new PauseTransition(Duration.millis(waitTime));
+//                    pause.setOnFinished((e) -> {
+//                        offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+//                        if (playing) {
+//                            offsetPlayer.play();
+//                        }
+//                    });
+//                    pause.play();
                 }
             });
 
@@ -73,11 +75,14 @@ public class RTAudio {
                 playing = false;
             });
 
-            offsetPlayer.currentTimeProperty().addListener((e) -> {
-                // double error = getActualOffset() - offset; // Positive when late, negative when early
-                // if (Math.abs(error) >= 20) {
-                //     offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
-                // }
+            player.currentTimeProperty().addListener((e) -> {
+                if (offsetPlayer.getVolume() == 0) {
+                    if (getCurrentPosition() >= offset) {
+                        offsetPlayer.setVolume(1.0);
+                        offsetPlayer.play();
+                        offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+                    }
+                }
             });
 
         } else {
@@ -117,7 +122,9 @@ public class RTAudio {
 
     public void restart() {
         if (player != null) {
+            player.pause();
             player.seek(Duration.ZERO);
+            offsetPlayer.seek(Duration.ZERO);
             player.play();
         } else {
             System.out.println(getClass().getName() + " - Media player is null.");

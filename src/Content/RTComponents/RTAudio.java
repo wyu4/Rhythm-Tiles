@@ -48,10 +48,14 @@ public class RTAudio {
             player.setOnPlaying(() -> {
                 playing = true;
                 if (offset == 0.0) {
-                    offsetPlayer.play();
+                    player.setVolume(1.0);
+                    offsetPlayer.setVolume(0.0);
+//                    offsetPlayer.play();
                 } else {
+                    player.setVolume(0.0);
+                    offsetPlayer.setVolume(1.0);
 //                    double waitTime = Math.max(0, offset-getCurrentPosition());
-                    offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
+//                    offsetPlayer.seek(Duration.millis(getCurrentPosition()-offset));
                     offsetPlayer.setVolume(0);
                     offsetPlayer.play();
 //                    PauseTransition pause = new PauseTransition(Duration.millis(waitTime));
@@ -76,7 +80,7 @@ public class RTAudio {
             });
 
             player.currentTimeProperty().addListener((e) -> {
-                if (offsetPlayer.getVolume() == 0) {
+                if (offsetPlayer.getVolume() == 0 && offset > 0) {
                     if (getCurrentPosition() >= offset) {
                         offsetPlayer.setVolume(1.0);
                         offsetPlayer.play();

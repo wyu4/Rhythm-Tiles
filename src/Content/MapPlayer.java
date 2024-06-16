@@ -164,7 +164,7 @@ public class MapPlayer extends RTPanel implements ActionListener {
                 return;
             }
 
-            if (tiles.getFirst() <= (audio.getCurrentPosition())) {
+            if (tiles.getFirst() <= (audio.getCurrentPosition() + (audio.getActualOffset() - audio.getOffset()))) {
                 tiles.removeFirst();
                 tilePanels[index].spawnTile();
             }
@@ -191,9 +191,9 @@ public class MapPlayer extends RTPanel implements ActionListener {
             lastFrameTime = settings.getTimeElapsedMillis();
 
             settings.repaintWindow();
-            if (audio!=null) {
-                System.out.println(audio.getActualOffset());
-            }
+//            if (audio!=null) {
+//                System.out.println(audio.getActualOffset());
+//            }
         } else if (e.getSource().equals(testTimer)) { // Testing tile spawns
             int randomIndex = (int) (Math.random() * 4);
             tilePanels[randomIndex].spawnTile();
